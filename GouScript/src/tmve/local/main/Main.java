@@ -6,6 +6,7 @@
 package tmve.local.main;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvConstraintViolationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -326,7 +327,7 @@ public class Main {
        
             if(showVersion == true ){
                 System.out.println("1.0.0");
-                System.out.println("Copyright (c) Telefonica Venezuela"+executionTime);
+                System.out.println("Copyright (c) Telefonica Venezuela"+executionTime.getDate());
                 System.exit(0);
             }
             
@@ -374,14 +375,18 @@ public class Main {
              
              while (it.hasNext()){
                 Node temp =it.next();
-                System.out.println("----"+temp.getNodeb_name()+"----");
-                RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp);
+                System.out.println("----"+temp.getNodeb_name()+" Integrate----");
+                System.out.println( RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp));
+                System.out.println("----"+temp.getNodeb_name()+" Rollback----");
+                System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
                  //System.out.println("SCRIPT RNC \n"+RncGouScript.createRNCGouScript(temp, _rnc));
                 
              }
               
             //script.processFileOrDirectory();
-        } catch (Exception e) {
+        }  catch (CsvConstraintViolationException e1) {
+             System.out.println(" "+e1.getMessage());
+        }catch (Exception e) {
              System.out.println(" "+e.getMessage());
         }
             //System.out.println("Newtork: "+Validator.getNetwork("10.18.50.82", "255.255.255.252"));

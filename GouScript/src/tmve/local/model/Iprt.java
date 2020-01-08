@@ -34,7 +34,39 @@ public class Iprt {
     private short nextpn;
     @CsvBindByName (column = "REMARK")
     private String remark;
+    @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
+    @CsvBindByName (column = "RTIDX")
+    private short rtIdx;
+    @CsvBindByName (column = "SBT")
+    private String sbt;
+    @CsvBindByName (column = "RTTYPE")
+    private String rtType;
 
+    public short getRtIdx() {
+        return rtIdx;
+    }
+
+    public void setRtIdx(short rtIdx) {
+        this.rtIdx = rtIdx;
+    }
+
+    public String getSbt() {
+        return sbt;
+    }
+
+    public void setSbt(String sbt) {
+        this.sbt = sbt;
+    }
+
+    public String getRtType() {
+        return rtType;
+    }
+
+    public void setRtType(String rtType) {
+        this.rtType = rtType;
+    }
+    
+    
     public String getRemark() {
         return remark;
     }
@@ -102,17 +134,7 @@ public class Iprt {
 
     @Override
     public String toString() {
-        return "Iprt{" + "filename=" + filename + ", dstip=" + dstip + ", dstmask=" + dstmask + ", nexthop=" + nexthop + ", sn=" + sn + ", srn=" + srn + ", nextpn=" + nextpn + ", remark=" + remark + '}';
+        return "Iprt{" + "filename=" + filename + ", dstip=" + dstip + ", dstmask=" + dstmask + ", nexthop=" + nexthop + ", sn=" + sn + ", srn=" + srn + ", nextpn=" + nextpn + ", remark=" + remark + ", rtIdx=" + rtIdx + ", sbt=" + sbt + ", rtType=" + rtType + '}';
     }
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
+ 
 }

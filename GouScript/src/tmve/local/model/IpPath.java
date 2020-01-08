@@ -18,8 +18,9 @@ public class IpPath {
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "ANI")
     private int ani;
+    @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "PATHID")
-    private String PATHID;
+    private short PATHID;
     @CsvBindByName (column = "PEERIPADDR")
     private String PEERIPADDR;
     @CsvBindByName (column = "VLANFLAG")
@@ -46,7 +47,18 @@ public class IpPath {
     private String REMARK;
     @CsvBindByName (column = "IPADDR")
     private String IPADDR;
+    @CsvBindByName (column = "PEERIP")
+    private String peerIp;
+   
 
+    public String getPeerIp() {
+        return peerIp;
+    }
+
+    public void setPeerIp(String peerIp) {
+        this.peerIp = peerIp;
+    }
+     
     public String getIPADDR() {
         return IPADDR;
     }
@@ -71,11 +83,11 @@ public class IpPath {
         this.ani = ani;
     }
 
-    public String getPATHID() {
+    public short getPATHID() {
         return PATHID;
     }
 
-    public void setPATHID(String PATHID) {
+    public void setPATHID(short PATHID) {
         this.PATHID = PATHID;
     }
 
@@ -177,8 +189,10 @@ public class IpPath {
 
     @Override
     public String toString() {
-        return "IpPath{" + "filename=" + filename + ", ani=" + ani + ", PATHID=" + PATHID + ", PEERIPADDR=" + PEERIPADDR + ", VLANFLAG=" + VLANFLAG + ", CARRYFLAG=" + CARRYFLAG + ", PATHT=" + PATHT + ", PEERMASK=" + PEERMASK + ", TXBW=" + TXBW + ", RXBW=" + RXBW + ", PATHCHK=" + PATHCHK + ", ITFT=" + ITFT + ", TRANST=" + TRANST + ", TRMLOADTHINDEX=" + TRMLOADTHINDEX + ", REMARK=" + REMARK + ", IPADDR=" + IPADDR + '}';
+        return "IpPath{" + "filename=" + filename + ", ani=" + ani + ", PATHID=" + PATHID + ", PEERIPADDR=" + PEERIPADDR + ", VLANFLAG=" + VLANFLAG + ", CARRYFLAG=" + CARRYFLAG + ", PATHT=" + PATHT + ", PEERMASK=" + PEERMASK + ", TXBW=" + TXBW + ", RXBW=" + RXBW + ", PATHCHK=" + PATHCHK + ", ITFT=" + ITFT + ", TRANST=" + TRANST + ", TRMLOADTHINDEX=" + TRMLOADTHINDEX + ", REMARK=" + REMARK + ", IPADDR=" + IPADDR + ", peerIp=" + peerIp +"}'";
     }
+
+   
 
    
 

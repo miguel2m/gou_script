@@ -28,7 +28,28 @@ public class Sctplnk {
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "NODEBID")
     private int nodebid;
+    @CsvBindByName (column = "PEERIP")
+    private String peerIp;
+    @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
+    @CsvBindByName (column = "SCTPNO")
+    private long sctpNo;
 
+    public String getPeerIp() {
+        return peerIp;
+    }
+
+    public void setPeerIp(String peerIp) {
+        this.peerIp = peerIp;
+    }
+
+    public long getSctpNo() {
+        return sctpNo;
+    }
+
+    public void setSctpNo(long sctpNo) {
+        this.sctpNo = sctpNo;
+    }
+    
     public String getFilename() {
         return filename;
     }
@@ -79,8 +100,6 @@ public class Sctplnk {
 
     @Override
     public String toString() {
-        return "Sctplnk{" + "filename=" + filename + ", LOCIP1=" + LOCIP1 + ", SCTPLNKN=" + SCTPLNKN + ", sn=" + sn + ", srn=" + srn + ", nodebid=" + nodebid + '}';
-    }
-    
-    
+        return "Sctplnk{" + "filename=" + filename + ", LOCIP1=" + LOCIP1 + ", SCTPLNKN=" + SCTPLNKN + ", sn=" + sn + ", srn=" + srn + ", nodebid=" + nodebid + ", peerIp=" + peerIp + ", sctpNo=" + sctpNo + '}';
+    } 
 }

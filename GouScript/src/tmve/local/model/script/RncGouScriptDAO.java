@@ -8,6 +8,7 @@ package tmve.local.model.script;
 import java.util.Iterator;
 import java.util.List;
 import tmve.local.model.IpPath;
+import tmve.local.model.Ippm;
 import tmve.local.model.Iprt;
 import tmve.local.model.Sctplnk;
 
@@ -21,8 +22,15 @@ public class RncGouScriptDAO {
     private Iprt iprt;
     private List <IpPath> ippaths;
     private List <Sctplnk> sctplnks;
+    private List <Ippm> ippmList;
 
-    
+    public List<Ippm> getIppmList() {
+        return ippmList;
+    }
+
+    public void setIppmList(List<Ippm> ippmList) {
+        this.ippmList = ippmList;
+    }
 
     public Iprt getIprt() {
         return iprt;
@@ -47,7 +55,23 @@ public class RncGouScriptDAO {
     public void setSctplnk(List<Sctplnk> sctplnk) {
         this.sctplnks = sctplnk;
     }
-
+    /**
+     * SI EL NODEB POSEE IPPM SE AGREGA AL SCRIPT (DEA) 
+     * @return SCRIPT de DEA para IPPM para la RNC INTEGRATE O ROLLBACK
+     */
+    public  String deaIppm(){
+        String script = "";
+        Iterator<Ippm> it = ippmList.iterator();
+        while (it.hasNext()){
+            Ippm temp = it.next();
+            script += "DEA IPPM: ANI="+temp.getAni()+
+                          ",PATHID="+temp.getPathId() +";\n";
+            
+           
+        }
+        
+        return script;
+    }
     /**
      * SE ELIMINA EL NEXTHOP DE LA RNC ACTUAL DEL SRN y SN
      * @return SCRIPT de RMV para IPRT para la RNC INTEGRATE O ROLLBACK
@@ -133,6 +157,24 @@ public class RncGouScriptDAO {
                ",TRMLOADTHINDEX="+temp.getTRMLOADTHINDEX()+
                ",REMARK=\""+temp.getREMARK()+"\";\n";
            
+        }
+        return script;
+    }
+    
+    /**
+     * SI EL NODEB POSEE IPPM SE AGREGA AL SCRIPT (ACT) 
+     * @return SCRIPT de ACT para IPPM para la RNC INTEGRATE O ROLLBACK
+     */
+    public String actIppm(){
+        String script = "";
+        Iterator<Ippm> it = ippmList.iterator();
+        while (it.hasNext()){
+           Ippm temp = it.next();
+           script +="ACT IPPM:ANI="+temp.getAni()+
+               ",PATHID="+temp.getPathId()+
+               ",ISQOSPATH="+temp.getIsqosPath()+
+               ",PMPRD="+temp.getPmPrd()+
+               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+";\n";
         }
         return script;
     }

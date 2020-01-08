@@ -81,7 +81,7 @@ public class ReadIprtCsv {
      * @throws IOException
      * @throws CsvConstraintViolationException 
      */
-    public static List<Iprt> getIprtNodeNexthop(String rnc,String dstip,String remark)
+    public static List<Iprt> getIprtNodeNexthop(String rnc,String dstip)
             throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/IPRT.csv");
@@ -97,8 +97,7 @@ public class ReadIprtCsv {
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     Iprt node  = (Iprt)t;                    
                     return (node.getFilename().contains(rnc) &&
-                            node.getDstip().equals(dstip) &&
-                            node.getRemark().contains(remark)); //To change body of generated lambdas, choose Tools | Templates.
+                            node.getDstip().equals(dstip)); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             
