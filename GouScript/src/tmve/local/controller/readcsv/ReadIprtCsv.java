@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import tmve.local.main.Main;
 import tmve.local.model.Iprt;
@@ -109,10 +110,57 @@ public class ReadIprtCsv {
                     .build();
             
             iprtNodes= csvToBean.parse();
-
+            
+         
             
         }
         return iprtNodes;
+        
+    }
+    
+    /**
+     * BUSCA EL RTIDX DEL NODEB Y CALCCULA EL MAYOR MAS UNO
+     * @param rnc
+     * @param dstip
+     * @param remark
+     * @return NEXTHOP DEL NODEB
+     * @throws IOException
+     * @throws CsvConstraintViolationException 
+     */
+    public static long getIprtNodeBRtidx(String _nodeBName)
+            throws IOException,CsvConstraintViolationException{
+        
+        Path myPath = Paths.get(Main.getDb_dir()+"/IPRT.csv");
+        List <Iprt> iprtNodes;
+        try (BufferedReader br = Files.newBufferedReader(myPath,
+                StandardCharsets.UTF_8)) {
+
+            HeaderColumnNameMappingStrategy<Iprt> strategy
+                    = new HeaderColumnNameMappingStrategy<>();
+            strategy.setType(Iprt.class);
+            BeanVerifier beanVerifier = new BeanVerifier() {
+                @Override
+                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
+                    Iprt node  = (Iprt)t;                    
+                    return (node.getFilename().contains(_nodeBName)); //To change body of generated lambdas, choose Tools | Templates.
+                }
+            };
+            
+            CsvToBean csvToBean = new CsvToBeanBuilder(br)
+                    .withType(Iprt.class)
+                    .withMappingStrategy(strategy)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .withVerifier(beanVerifier)
+                    .build();
+            
+            iprtNodes= csvToBean.parse();
+
+            
+        }
+        return iprtNodes.stream()
+                            .max( Comparator.comparing( Iprt::getRtIdx ) )
+                            .get().getRtIdx();
+        
         
     }
 }

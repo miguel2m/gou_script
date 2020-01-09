@@ -19,6 +19,9 @@ public class IpPath {
     @CsvBindByName (column = "ANI")
     private int ani;
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
+    @CsvBindByName (column = "SN")
+    private short sn;
+    @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "PATHID")
     private short PATHID;
     @CsvBindByName (column = "PEERIPADDR")
@@ -49,8 +52,15 @@ public class IpPath {
     private String IPADDR;
     @CsvBindByName (column = "PEERIP")
     private String peerIp;
-   
 
+    public short getSn() {
+        return sn;
+    }
+
+    public void setSn(short sn) {
+        this.sn = sn;
+    }
+   
     public String getPeerIp() {
         return peerIp;
     }
