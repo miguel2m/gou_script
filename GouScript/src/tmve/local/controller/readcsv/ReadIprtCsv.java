@@ -119,7 +119,7 @@ public class ReadIprtCsv {
     }
     
     /**
-     * BUSCA EL RTIDX DEL NODEB Y CALCCULA EL MAYOR MAS UNO
+     * BUSCA EL RTIDX DEL NODEB Y CALCULA EL MAYOR
      * @param rnc
      * @param dstip
      * @param remark
@@ -127,7 +127,7 @@ public class ReadIprtCsv {
      * @throws IOException
      * @throws CsvConstraintViolationException 
      */
-    public static long getIprtNodeBRtidx(String _nodeBName)
+    public static short getIprtNodeBRtidx(String _nodeBName)
             throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/IPRT.csv");

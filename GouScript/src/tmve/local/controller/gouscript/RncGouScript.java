@@ -34,14 +34,14 @@ import tmve.local.model.script.RncGouScriptDAO;
  */
 public class RncGouScript {
     /**
-     * METODO PARA CREAR GOU SCRIPT (INTEGRATE)
+     * METODO PARA CREAR GOU SCRIPT (RNC INTEGRATE)
      * @param node_name
      * @param _rnc
      * @param _srn
      * @param _sn
      * @param _port
      * @param _vrf
-     * @return GOU SCRIPT (INTEGRATE)
+     * @return GOU SCRIPT (RNC INTEGRATE)
      * @throws IOException
      * @throws CsvConstraintViolationException
      * @throws Exception 
@@ -60,12 +60,12 @@ public class RncGouScript {
         //Se consulta en la tabla IPPM si el nodeB ID tiene IPPM
         List<Ippm> ippmNodes = ReadIppmCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
         // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo
-        List<IpPath> ipPathNodes = ReadIpPathCsv.getIpPathNode(adjNodes.get(0).getAni());
+        List<IpPath> ipPathNodes = ReadIpPathCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
         //Se consulta la tabla NODEB, el NODEB filtrado por nombre del nodeB, para buscar su ID-NODEB
         List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(node_name.getNodeb_name());
         //Se consulta la tabla NodeBIP para conocer la red de Host del NODEB
         List<NodeBIp> nodeBIp = ReadNodeBIpCsv.getNodeBDstip(nodeB.get(0).getNodebid());
-        
+        System.out.println("NODE B Id: "+nodeB.get(0).getNodebid());
         //Se calcula la red Network del NodeB
         String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
             System.out.println("NODE B NETWORK "+nodeNetwork+" \n");
@@ -121,7 +121,7 @@ public class RncGouScript {
          return salidaGouScript;
     }
     /**
-     * METODO PARA CREAR GOU SCRIPT (ROLLBACK)
+     * METODO PARA CREAR GOU SCRIPT ( RNC ROLLBACK)
      * @param node_name
      * @param _rnc
      * @param _srn
@@ -145,7 +145,7 @@ public class RncGouScript {
         //Se consulta en la tabla IPPM si el nodeB ID tiene IPPM
         List<Ippm> ippmNodes = ReadIppmCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
         // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo
-        List<IpPath> ipPathNodes = ReadIpPathCsv.getIpPathNode(adjNodes.get(0).getAni());
+        List<IpPath> ipPathNodes = ReadIpPathCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
         //Se consulta la tabla NODEB, el NODEB filtrado por nombre del nodeB, para buscar su ID-NODEB        
         List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(node_name.getNodeb_name());
         //Se consulta la tabla NodeBIP para conocer la red de Host del NODEB
@@ -196,6 +196,7 @@ public class RncGouScript {
         if(!CollectionUtils.isEmpty(_RncGouRollbackScriptDAO .getIppmList()))
          //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
         salidaGouScript += _RncGouRollbackScriptDAO.actIppm();
+        
          return salidaGouScript;
     }
 }

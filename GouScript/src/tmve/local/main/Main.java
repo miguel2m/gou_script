@@ -39,6 +39,7 @@ import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import tmve.local.controller.ExecutionTime;
 import tmve.local.controller.NodeList;
 import tmve.local.controller.Validator;
+import tmve.local.controller.gouscript.NodeBGouScript;
 import tmve.local.controller.gouscript.RncGouScript;
 import tmve.local.controller.readcsv.ReadAdjnodeCsv;
 import tmve.local.controller.readcsv.ReadIpPathCsv;
@@ -377,8 +378,10 @@ public class Main {
                 Node temp =it.next();
                 System.out.println("----"+temp.getNodeb_name()+" Integrate----");
                 System.out.println( RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp));
+                System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
                 System.out.println("----"+temp.getNodeb_name()+" Rollback----");
                 System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
+                 System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
                  //System.out.println("SCRIPT RNC \n"+RncGouScript.createRNCGouScript(temp, _rnc));
                 
              }

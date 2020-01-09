@@ -25,7 +25,15 @@ import tmve.local.model.IpPath;
  * @author Miguelangel
  */
 public class ReadIpPathCsv {
-    public static List<IpPath> getIpPathNode(int aniNodeName)throws IOException,CsvConstraintViolationException{
+    
+    /**
+     * METODO QUE RETORNA EL IPPATH DEL NODEB ANI DEL LADO DE LA RNC (FILTRA POR ANI)
+     * @param aniNodeName
+     * @return IPPATH DEL NODEB ANI DEL LADO DE LA RNC
+     * @throws IOException
+     * @throws CsvConstraintViolationException 
+     */
+    public static List<IpPath> getIpPathNode(String fileName,int aniNodeName)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/IPPATH.csv");
         List <IpPath> ipPathNodes;
@@ -39,7 +47,48 @@ public class ReadIpPathCsv {
                 @Override
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     IpPath node  = (IpPath)t;                    
-                    return (node.getAni() == aniNodeName); //To change body of generated lambdas, choose Tools | Templates.
+                    return (node.getAni() == aniNodeName &&
+                            node.getFilename().contains(fileName)); //To change body of generated lambdas, choose Tools | Templates.
+                }
+            };
+            
+            CsvToBean csvToBean = new CsvToBeanBuilder(br)
+                    .withType(IpPath.class)
+                    .withMappingStrategy(strategy)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .withVerifier(beanVerifier)
+                    .build();
+            
+            ipPathNodes= csvToBean.parse();
+
+            
+        }
+        return ipPathNodes;
+        
+    }
+    
+    /**
+     * METODO QUE RETORNA EL IPPATH DEL NODEB NAME DEL LADO DEl NODEB (FILTRA POR NODE NAME)
+     * @param aniNodeName
+     * @return IPPATH DEL NODEB NAME DEL LADO DEl NODEB
+     * @throws IOException
+     * @throws CsvConstraintViolationException 
+     */
+    public static List<IpPath> getIpPathNodeName(String node_Name)throws IOException,CsvConstraintViolationException{
+        
+        Path myPath = Paths.get(Main.getDb_dir()+"/IPPATH.csv");
+        List <IpPath> ipPathNodes;
+        try (BufferedReader br = Files.newBufferedReader(myPath,
+                StandardCharsets.UTF_8)) {
+
+            HeaderColumnNameMappingStrategy<IpPath> strategy
+                    = new HeaderColumnNameMappingStrategy<>();
+            strategy.setType(IpPath.class);
+            BeanVerifier beanVerifier = new BeanVerifier() {
+                @Override
+                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
+                    IpPath node  = (IpPath)t;                    
+                    return (node.getFilename().contains(node_Name)); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             
