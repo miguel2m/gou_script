@@ -27,7 +27,7 @@ import tmve.local.model.AdjNode;
  */
 public class ReadAdjnodeCsv {
     
-    public static List<AdjNode> getAdjNode(String nodeName)throws IOException,CsvConstraintViolationException{
+    public static List<AdjNode> getAdjNode(String _rnc,String nodeName)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/ADJNODE.csv");
         List <AdjNode> aniNodes;
@@ -41,7 +41,8 @@ public class ReadAdjnodeCsv {
                 @Override
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     AdjNode node  = (AdjNode)t;                    
-                    return node.getName().equals(nodeName); //To change body of generated lambdas, choose Tools | Templates.
+                    return (node.getFilename().contains(_rnc) && 
+                            node.getName().equals(nodeName)); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

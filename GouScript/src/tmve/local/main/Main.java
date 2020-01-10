@@ -384,6 +384,7 @@ public class Main {
                 System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
                 System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
                  System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
+                 System.out.println("\n");
                  //System.out.println("SCRIPT RNC \n"+RncGouScript.createRNCGouScript(temp, _rnc));
                 
              }

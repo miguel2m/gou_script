@@ -57,7 +57,7 @@ public class RncGouScript {
         try{
             //System.out.println(" 1 PASO! ");
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
-            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(node_name.getNodeb_name());
+            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
                 // System.exit(0);
@@ -77,16 +77,16 @@ public class RncGouScript {
             // System.out.println(" IPPATH 4 PASO! ");
 
             //Se consulta la tabla NODEB, el NODEB filtrado por nombre del nodeB, para buscar su ID-NODEB        
-            List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(node_name.getNodeb_name());
+            List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(nodeB )){
-                System.err.println("NODEB: EL ANI "+adjNodes.get(0).getAni()+
-                                   " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");
+                System.err.println("NODEB: EL NODEB "+node_name.getNodeb_name()+
+                                   " NO SE ENCUENTRA EN LA TABLA NODEB \n");
                  //System.exit(0);
             }
 
             // System.out.println("NODEB 5 PASO! ");
             //Se consulta la tabla NodeBIP para conocer la red de Host del NODEB
-            List<NodeBIp> nodeBIp = ReadNodeBIpCsv.getNodeBDstip(nodeB.get(0).getNodebid());
+            List<NodeBIp> nodeBIp = ReadNodeBIpCsv.getNodeBDstip(_rnc,nodeB.get(0).getNodebid());
             if(CollectionUtils.isEmpty(nodeBIp )){
                 System.err.println("NODEBIP: EL NODEB ID "+nodeB.get(0).getNodebid()+
                                    " NO SE ENCUENTRA NODEBIP \n");
@@ -98,7 +98,7 @@ public class RncGouScript {
             String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
                 System.out.println("NODE B NETWORK "+nodeNetwork+" \n");
 
-                System.out.println("NODE B NETWORK 6.1 PASO! ");
+            //    System.out.println("NODE B NETWORK 6.1 PASO! ");
             ///Se consulta la tabla SCTCPLNK para consultar el   sctplnk del NodeB filtador por NodeBID            
             List<Sctplnk> sctplnks = ReadSctplnkCsv.getNodeBSctplnk(_rnc,nodeB.get(0).getNodebid());
             if(CollectionUtils.isEmpty(sctplnks  )){
@@ -197,7 +197,7 @@ public class RncGouScript {
         String salidaGouScript ="";
         try{
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
-            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(node_name.getNodeb_name());
+            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
                  //System.exit(0);
@@ -215,19 +215,20 @@ public class RncGouScript {
                  //System.exit(0);
             }
             //Se consulta la tabla NODEB, el NODEB filtrado por nombre del nodeB, para buscar su ID-NODEB        
-            List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(node_name.getNodeb_name());
+            List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(nodeB )){
-                System.err.println("NODEB: EL ANI "+adjNodes.get(0).getAni()+
-                                   " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");
+                System.err.println("NODEB: EL NODEB "+node_name.getNodeb_name()+
+                                   " NO SE ENCUENTRA EN LA TABLA NODEB \n");
                  //System.exit(0);
             }
             //Se consulta la tabla NodeBIP para conocer la red de Host del NODEB
-            List<NodeBIp> nodeBIp = ReadNodeBIpCsv.getNodeBDstip(nodeB.get(0).getNodebid());
+            List<NodeBIp> nodeBIp = ReadNodeBIpCsv.getNodeBDstip(_rnc,nodeB.get(0).getNodebid());
             if(CollectionUtils.isEmpty(nodeBIp )){
                 System.err.println("NODEBIP: EL NODEB ID "+nodeB.get(0).getNodebid()+
                                    " NO SE ENCUENTRA NODEBIP \n");
                  //System.exit(0);
             }
+            nodeBIp.forEach(System.out::println);
             //Se calcula la red Network del NodeB
             String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
                 System.out.println("NODE B RNC NETWORK "+nodeNetwork+" \n");

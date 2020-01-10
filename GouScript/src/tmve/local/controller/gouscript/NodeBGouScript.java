@@ -46,7 +46,7 @@ public class NodeBGouScript {
         String result ="";
         try{
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
-            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(node_name.getNodeb_name());
+            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
                  //System.exit(0);
@@ -65,6 +65,7 @@ public class NodeBGouScript {
                                    " NO SE ENCUENTRA en la tabla SCTPLNK "+_rnc+"\n");
                  //System.exit(0);
             }
+             sctplnks .forEach(System.out::println);
             //Se consulta en la tabla IPRT el nexthop de la RED del Node B
             List<Iprt> ipRtNodes = ReadIprtCsv.getIprtNodeNexthop(
                     node_name.getNodeb_name(),
@@ -158,7 +159,7 @@ public class NodeBGouScript {
         String result ="";
         try{
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
-            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(node_name.getNodeb_name());
+            List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
                  //System.exit(0);
@@ -176,7 +177,8 @@ public class NodeBGouScript {
                 System.err.println("SCTPLNK: EL NODEB ID "+node_name.getNodeb_name()+
                                    " NO SE ENCUENTRA en la tabla SCTPLNK "+_rnc+"\n");
                  //System.exit(0);
-            } 
+            }
+              sctplnks .forEach(System.out::println);
             //Se consulta en la tabla IPRT el nexthop de la RED del Node B
             List<Iprt> ipRtNodes = ReadIprtCsv.getIprtNodeNexthop(
                     node_name.getNodeb_name(),

@@ -25,7 +25,7 @@ import tmve.local.model.NodeBIp;
  * @author Miguelangel
  */
 public class ReadNodeBIpCsv {
-    public static List<NodeBIp> getNodeBDstip(int node_id)throws IOException,CsvConstraintViolationException{
+    public static List<NodeBIp> getNodeBDstip(String _rnc,int node_id)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/NODEBIP.csv");
         List <NodeBIp> nodeB;
@@ -39,7 +39,8 @@ public class ReadNodeBIpCsv {
                 @Override
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     NodeBIp node  = (NodeBIp)t;                    
-                    return (node.getNodebid() == node_id ); //To change body of generated lambdas, choose Tools | Templates.
+                    return (node.getFilename().contains(_rnc)&&
+                            node.getNodebid() == node_id ); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

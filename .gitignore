@@ -23,7 +23,6 @@ hs_err_pid*
 
 #Ignora la carpeta DB
 db/
-input/
 output/
 
 # Maven 

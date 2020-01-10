@@ -33,7 +33,7 @@ public class ReadIpPathCsv {
      * @throws IOException
      * @throws CsvConstraintViolationException 
      */
-    public static List<IpPath> getIpPathNode(String fileName,int aniNodeName)throws IOException,CsvConstraintViolationException{
+    public static List<IpPath> getIpPathNode(String _rnc,int aniNodeName)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/IPPATH.csv");
         List <IpPath> ipPathNodes;
@@ -48,7 +48,7 @@ public class ReadIpPathCsv {
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     IpPath node  = (IpPath)t;                    
                     return (node.getAni() == aniNodeName &&
-                            node.getFilename().contains(fileName)); //To change body of generated lambdas, choose Tools | Templates.
+                            node.getFilename().contains(_rnc)); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

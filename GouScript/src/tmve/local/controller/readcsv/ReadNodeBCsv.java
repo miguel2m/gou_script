@@ -25,7 +25,7 @@ import tmve.local.model.NodeB;
  * @author Miguelangel
  */
 public class ReadNodeBCsv {
-    public static List<NodeB> getNodeBId(String node_name)throws IOException,CsvConstraintViolationException{
+    public static List<NodeB> getNodeBId(String _rnc,String node_name)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/NODEB.csv");
         List <NodeB> nodeB;
@@ -39,7 +39,8 @@ public class ReadNodeBCsv {
                 @Override
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     NodeB node  = (NodeB)t;                    
-                    return (node.getNodebname().equals(node_name) ); //To change body of generated lambdas, choose Tools | Templates.
+                    return (node.getFilename().contains(_rnc) &&
+                            node.getNodebname().contains(node_name) ); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

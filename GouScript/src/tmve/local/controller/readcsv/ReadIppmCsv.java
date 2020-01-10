@@ -26,7 +26,7 @@ import tmve.local.model.Ippm;
  * @author P05144
  */
 public class ReadIppmCsv {
-    public static List<Ippm> getIpPathNode(String fileName,int aniNodeName)throws IOException,CsvConstraintViolationException{
+    public static List<Ippm> getIpPathNode(String _rnc,int aniNodeName)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/IPPM.csv");
         List <Ippm> ipPmNodes ;
@@ -41,7 +41,7 @@ public class ReadIppmCsv {
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     Ippm node  = (Ippm )t;                    
                     return (node.getAni() == aniNodeName &&
-                            node.getFilename().contains(fileName)); //To change body of generated lambdas, choose Tools | Templates.
+                            node.getFilename().contains(_rnc)); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

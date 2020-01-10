@@ -86,7 +86,7 @@ public class ReadSctplnkCsv {
                 @Override
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     Sctplnk node  = (Sctplnk)t;                    
-                    return (node.getFilename().contains(node_name) ); //To change body of generated lambdas, choose Tools | Templates.
+                    return (node.getFilename().matches("(?s).*\\b"+node_name+"\\b.*")); //contains(node_name) */); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

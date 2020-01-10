@@ -18,13 +18,22 @@ public class NodeBIp {
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "NODEBID")
     private int nodebid;
-
+    @CsvBindByName (column = "NBTRANTP") /*INDICA SI EL NODO ES FULL IP, DUAL STACK o ATM*/
+    private String NBTRANTP;
     @CsvBindByName (column = "NBIPOAMIP")
     private String NBIPOAMIP; /*Es el HOST IP pero debe utilizar el Network IP*/
  
     @CsvBindByName (column = "NBIPOAMMASK")
     private String NBIPOAMMASK;
 
+    public String getNBTRANTP() {
+        return NBTRANTP;
+    }
+
+    public void setNBTRANTP(String NBTRANTP) {
+        this.NBTRANTP = NBTRANTP;
+    }
+        
     public String getFilename() {
         return filename;
     }

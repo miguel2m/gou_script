@@ -19,6 +19,7 @@ public class Iprt {
     private String filename;
     @CsvBindByName (column = "DSTIP")
     private String dstip;
+    //@PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "No FUE POSIBLE CONSEGUIR LA RUTA ORIGINAL DEL LADO DEL NODOs")
     @CsvBindByName (column = "DSTMASK")
     private String dstmask;
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "NO NODEB NEXTHOOP -- PLEASE CHECK")
