@@ -32,7 +32,7 @@ public class ReadSctplnkCsv {
      * @throws IOException
      * @throws CsvConstraintViolationException 
      */
-    public static List<Sctplnk> getNodeBSctplnk(int node_id)throws IOException,CsvConstraintViolationException{
+    public static List<Sctplnk> getNodeBSctplnk(String _rnc,int node_id)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/SCTPLNK.csv");
         List <Sctplnk> sctplnks;
@@ -46,7 +46,8 @@ public class ReadSctplnkCsv {
                 @Override
                 public boolean verifyBean(Object t) throws CsvConstraintViolationException {
                     Sctplnk node  = (Sctplnk)t;                    
-                    return (node.getNodebid() == node_id ); //To change body of generated lambdas, choose Tools | Templates.
+                    return (node.getFilename().contains(_rnc)&&
+                            node.getNodebid() == node_id ); //To change body of generated lambdas, choose Tools | Templates.
                 }
             };
             

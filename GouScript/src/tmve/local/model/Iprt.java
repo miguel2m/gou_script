@@ -21,6 +21,7 @@ public class Iprt {
     private String dstip;
     @CsvBindByName (column = "DSTMASK")
     private String dstmask;
+    @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "NO NODEB NEXTHOOP -- PLEASE CHECK")
     @CsvBindByName (column = "NEXTHOP")
     private String nexthop;
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")

@@ -18,8 +18,10 @@ public class NodeBIp {
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "NODEBID")
     private int nodebid;
+
     @CsvBindByName (column = "NBIPOAMIP")
     private String NBIPOAMIP; /*Es el HOST IP pero debe utilizar el Network IP*/
+ 
     @CsvBindByName (column = "NBIPOAMMASK")
     private String NBIPOAMMASK;
 

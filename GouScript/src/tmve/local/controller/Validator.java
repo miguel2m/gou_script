@@ -47,7 +47,7 @@ public class Validator {
      * @param mask
      * @return Network of IP
      */
-    public static String getNetwork(String ipAddress, String mask){
+    public static String getNetwork(String ipAddress, String mask) throws IllegalArgumentException {
         
         SubnetUtils utils = new SubnetUtils(ipAddress, mask);
         SubnetUtils.SubnetInfo info = utils.getInfo();

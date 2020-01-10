@@ -376,21 +376,25 @@ public class Main {
              
              while (it.hasNext()){
                 Node temp =it.next();
-                System.out.println("----"+temp.getNodeb_name()+" Integrate----");
+                System.out.println("----"+temp.getNodeb_name()+" RNC Integrate----");
                 System.out.println( RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp));
+                System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
                 System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
-                System.out.println("----"+temp.getNodeb_name()+" Rollback----");
+                System.out.println("----"+temp.getNodeb_name()+" RNC Rollback----");
                 System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
+                System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
                  System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
                  //System.out.println("SCRIPT RNC \n"+RncGouScript.createRNCGouScript(temp, _rnc));
                 
              }
               
             //script.processFileOrDirectory();
-        }  catch (CsvConstraintViolationException e1) {
-             System.out.println(" "+e1.getMessage());
+         }catch (IllegalArgumentException e1){
+             System.out.println(" "+e1.getMessage().toString()+" "+e1.getCause());
+        }catch (CsvConstraintViolationException e2) {
+             System.out.println(" "+e2.getMessage().toString());
         }catch (Exception e) {
-             System.out.println(" "+e.getMessage());
+             System.out.println(" "+e.getMessage().toString());
         }
             //System.out.println("Newtork: "+Validator.getNetwork("10.18.50.82", "255.255.255.252"));
             System.out.println(executionTime.getExecutionTime());
