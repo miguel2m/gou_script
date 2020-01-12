@@ -27,6 +27,7 @@ import tmve.local.model.Sctplnk;
 public class ReadSctplnkCsv {
     /**
      * METODO QUE RETORNA EL SCTPLNK DEL NODEB ID DEL LADO DE LA RNC
+     * @param _rnc
      * @param node_id
      * @return EL SCTPLNK DEL NODEB ID DEL LADO DE LA RNC
      * @throws IOException
@@ -42,13 +43,10 @@ public class ReadSctplnkCsv {
             HeaderColumnNameMappingStrategy<Sctplnk> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(Sctplnk.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    Sctplnk node  = (Sctplnk)t;                    
-                    return (node.getFilename().contains(_rnc)&&
-                            node.getNodebid() == node_id ); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                Sctplnk node  = (Sctplnk)t;
+                return (node.getFilename().contains(_rnc)&&
+                        node.getNodebid() == node_id ); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)
@@ -66,13 +64,14 @@ public class ReadSctplnkCsv {
         
     }
     /**
+     * ARREGLAR
      * METODO QUE RETORNA EL SCTPLNK DEL LADO DEL NODEB
      * @param node_name
      * @return SCTPLNK DEL LADO DEL NODEB
      * @throws IOException
      * @throws CsvConstraintViolationException 
      */
-    public static List<Sctplnk> getNodeBSctplnkNodeIntegrate(String node_name)throws IOException,CsvConstraintViolationException{
+    public static List<Sctplnk> getNodeBSctplnkNodeIntegrate(String node_name, String peerIp)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/SCTPLNK.csv");
         List <Sctplnk> sctplnks;
@@ -82,12 +81,10 @@ public class ReadSctplnkCsv {
             HeaderColumnNameMappingStrategy<Sctplnk> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(Sctplnk.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    Sctplnk node  = (Sctplnk)t;                    
-                    return (node.getFilename().matches("(?s).*\\b"+node_name+"\\b.*")); //contains(node_name) */); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                Sctplnk node  = (Sctplnk)t;
+                return (node.getFilename().contains(node_name) &&
+                        node.getLOCIP().equals(peerIp)); //contains(node_name) */); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)

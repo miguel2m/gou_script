@@ -52,7 +52,17 @@ public class IpPath {
     private String IPADDR;
     @CsvBindByName (column = "PEERIP")
     private String peerIp;
+    @CsvBindByName (column = "LOCALIP")
+    private String localIP; //HACER MACTH DEL LADO DEL NODO CON EL PEERIP DE LA RNC
 
+    public String getLocalIP() {
+        return localIP;
+    }
+
+    public void setLocalIP(String localIP) {
+        this.localIP = localIP;
+    }
+    
     public short getSn() {
         return sn;
     }
@@ -199,14 +209,8 @@ public class IpPath {
 
     @Override
     public String toString() {
-        return "IpPath{" + "filename=" + filename + ", ani=" + ani + ", PATHID=" + PATHID + ", PEERIPADDR=" + PEERIPADDR + ", VLANFLAG=" + VLANFLAG + ", CARRYFLAG=" + CARRYFLAG + ", PATHT=" + PATHT + ", PEERMASK=" + PEERMASK + ", TXBW=" + TXBW + ", RXBW=" + RXBW + ", PATHCHK=" + PATHCHK + ", ITFT=" + ITFT + ", TRANST=" + TRANST + ", TRMLOADTHINDEX=" + TRMLOADTHINDEX + ", REMARK=" + REMARK + ", IPADDR=" + IPADDR + ", peerIp=" + peerIp +"}'";
+        return "IpPath{" + "filename=" + filename + ", ani=" + ani + ", sn=" + sn + ", PATHID=" + PATHID + ", PEERIPADDR=" + PEERIPADDR + ", VLANFLAG=" + VLANFLAG + ", CARRYFLAG=" + CARRYFLAG + ", PATHT=" + PATHT + ", PEERMASK=" + PEERMASK + ", TXBW=" + TXBW + ", RXBW=" + RXBW + ", PATHCHK=" + PATHCHK + ", ITFT=" + ITFT + ", TRANST=" + TRANST + ", TRMLOADTHINDEX=" + TRMLOADTHINDEX + ", REMARK=" + REMARK + ", IPADDR=" + IPADDR + ", peerIp=" + peerIp + ", localIP=" + localIP + '}';
     }
 
-   
-
-   
-
-    
-    
     
 }

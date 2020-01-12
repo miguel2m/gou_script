@@ -6,7 +6,6 @@
 package tmve.local.controller.readcsv;
 
 import com.opencsv.bean.BeanVerifier;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -37,13 +36,10 @@ public class ReadAdjnodeCsv {
             HeaderColumnNameMappingStrategy<AdjNode> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(AdjNode.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    AdjNode node  = (AdjNode)t;                    
-                    return (node.getFilename().contains(_rnc) && 
-                            node.getName().equals(nodeName)); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                AdjNode node  = (AdjNode)t;
+                return (node.getFilename().contains(_rnc) &&
+                        node.getName().equals(nodeName)); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)

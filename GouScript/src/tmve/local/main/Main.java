@@ -5,25 +5,15 @@
  */
 package tmve.local.main;
 
-import com.opencsv.CSVReader;
+
+import ch.qos.logback.classic.util.ContextInitializer;
 import com.opencsv.exceptions.CsvConstraintViolationException;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.stream.XMLStreamException;
 
 
 
@@ -34,32 +24,25 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.net.util.SubnetUtils;
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tmve.local.controller.ExecutionTime;
 import tmve.local.controller.NodeList;
 import tmve.local.controller.Validator;
 import tmve.local.controller.gouscript.NodeBGouScript;
 import tmve.local.controller.gouscript.RncGouScript;
-import tmve.local.controller.readcsv.ReadAdjnodeCsv;
-import tmve.local.controller.readcsv.ReadIpPathCsv;
-import tmve.local.controller.readcsv.ReadIprtCsv;
-import tmve.local.controller.readcsv.ReadNodeBCsv;
-import tmve.local.controller.readcsv.ReadNodeBIpCsv;
-import tmve.local.controller.readcsv.ReadSctplnkCsv;
-import tmve.local.model.AdjNode;
-import tmve.local.model.IpPath;
-import tmve.local.model.Iprt;
 import tmve.local.model.Node;
-import tmve.local.model.NodeB;
-import tmve.local.model.NodeBIp;
-import tmve.local.model.Sctplnk;
+
 
 /**
  *
  * @author Miguelangel
  */
 public class Main {
+    public static Logger logger ;
+    
+    
     private static String _db_dir=null;
     /**
      * The file to be parsed.
@@ -159,7 +142,10 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)  {
+    public static void main(String[] args) throws CsvConstraintViolationException  {
+        
+        //logger.error("Example log from {}", Main.class.getSimpleName());
+        
         Options options = new Options();
         CommandLine cmd = null;
         ExecutionTime executionTime = new ExecutionTime(); //Execution Time
@@ -314,14 +300,14 @@ public class Main {
             
         }catch (NumberFormatException ex) {
             System.out.println("Please enter valid SN or SRN  "+ex.getMessage().toString());
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getMessage().toString());
+         //   Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getMessage().toString());
             System.exit(1);
         }catch(IllegalArgumentException e){
            System.out.println("AQUI "+e.getMessage().toString());
            System.exit(1);
         }catch (ParseException ex) {
             System.out.println(" "+ex.getMessage().toString());
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getMessage().toString());
+            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getMessage().toString());
             System.exit(1);
         }
             
@@ -368,33 +354,40 @@ public class Main {
                     System.exit(1);
                 }
             }
-            
-         try {
+            //System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, outputDirectory);
+
+            System.setProperty("LOG_DIR", outputDirectory );
+            System.setProperty("LOG_FILE", _rnc );
+            logger = LoggerFactory.getLogger(Main.class);
+            //logger.info("Example log from {}", Main.class.getSimpleName());
+        try {
              List<Node> nodes = NodeList.getNodeBList(inputFile);
              nodes.forEach(System.out::println);
              Iterator<Node> it = nodes.iterator();
              
-             while (it.hasNext()){
+            do{
+                
                 Node temp =it.next();
-                System.out.println("----"+temp.getNodeb_name()+" RNC Integrate----");
-                System.out.println( RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp));
-                System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
-                System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
-                System.out.println("----"+temp.getNodeb_name()+" RNC Rollback----");
-                System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
-                System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
-                 System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
-                 System.out.println("\n");
+               
+                    System.out.println("----"+temp.getNodeb_name()+" RNC Integrate----");
+                    System.out.println( RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp));
+                    System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
+                    System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
+                    System.out.println("----"+temp.getNodeb_name()+" RNC Rollback----");
+                    System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
+                    System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
+                     System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
+                     System.out.println("\n");
                  //System.out.println("SCRIPT RNC \n"+RncGouScript.createRNCGouScript(temp, _rnc));
                 
-             }
-              
+            }while (it.hasNext());
+            
             //script.processFileOrDirectory();
-         }catch (IllegalArgumentException e1){
-             System.out.println(" "+e1.getMessage().toString()+" "+e1.getCause());
+       /* }catch (IllegalArgumentException e1){
+             System.out.println(" "+e1.getMessage().toString()+" "+e1.getCause());*/
         }catch (CsvConstraintViolationException e2) {
              System.out.println(" "+e2.getMessage().toString());
-        }catch (Exception e) {
+        }catch (IOException e) {
              System.out.println(" "+e.getMessage().toString());
         }
             //System.out.println("Newtork: "+Validator.getNetwork("10.18.50.82", "255.255.255.252"));

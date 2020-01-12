@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tmve.local.controller.Validator;
 import tmve.local.controller.readcsv.ReadAdjnodeCsv;
 import tmve.local.controller.readcsv.ReadIpPathCsv;
@@ -18,6 +20,7 @@ import tmve.local.controller.readcsv.ReadIprtCsv;
 import tmve.local.controller.readcsv.ReadNodeBCsv;
 import tmve.local.controller.readcsv.ReadNodeBIpCsv;
 import tmve.local.controller.readcsv.ReadSctplnkCsv;
+import tmve.local.main.Main;
 import tmve.local.model.AdjNode;
 import tmve.local.model.IpPath;
 import tmve.local.model.Ippm;
@@ -26,6 +29,7 @@ import tmve.local.model.Node;
 import tmve.local.model.NodeB;
 import tmve.local.model.NodeBIp;
 import tmve.local.model.Sctplnk;
+import tmve.local.model.exception.GouScriptException;
 import tmve.local.model.script.RncGouScriptDAO;
 
 /**
@@ -33,6 +37,7 @@ import tmve.local.model.script.RncGouScriptDAO;
  * @author Miguelangel
  */
 public class RncGouScript {
+
     /**
      * METODO PARA CREAR GOU SCRIPT (RNC INTEGRATE)
      * @param node_name
@@ -51,27 +56,27 @@ public class RncGouScript {
             short _srn, 
             short _sn, 
             short _port, 
-            String _vrf) throws 
-            Exception{
+            String _vrf){
         String salidaGouScript ="";
         try{
             //System.out.println(" 1 PASO! ");
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
-                System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
+                //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
+                throw new GouScriptException("403","There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
                 // System.exit(0);
             }
             //System.out.println("ADJNODES 2 PASO! ");
             //Se consulta en la tabla IPPM si el nodeB ID tiene IPPM
-            List<Ippm> ippmNodes = ReadIppmCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
+            List<Ippm> ippmNodes = ReadIppmCsv.getIppmNode(_rnc,adjNodes.get(0).getAni());
             //SE ENCUENTRA VALIDADO MAS ABAJO
             // System.out.println(" 3 PASO! ");
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo
             List<IpPath> ipPathNodes = ReadIpPathCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
             if(CollectionUtils.isEmpty(ipPathNodes )){
-                System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
-                                   " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");
+                /*System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
+                                   " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");*/
                  //System.exit(0);
             }
             // System.out.println(" IPPATH 4 PASO! ");
@@ -93,23 +98,25 @@ public class RncGouScript {
                  //System.exit(0);
             }
             // System.out.println("NODEB IP 6 PASO! ");
-             nodeBIp.forEach(System.out::println);
+            // nodeBIp.forEach(System.out::println);
+             if (nodeBIp.get(0).getNBTRANTP().equals("ATMTRANS_IP"))
+                 throw new GouScriptException("400"," RNC INTEGRATE NODE B "+node_name.getNodeb_name()+" (ATM IPTRANS)");
             //Se calcula la red Network del NodeB
             String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
-                System.out.println("NODE B NETWORK "+nodeNetwork+" \n");
+                //System.out.println("NODE B NETWORK "+nodeNetwork+" \n");
 
             //    System.out.println("NODE B NETWORK 6.1 PASO! ");
             ///Se consulta la tabla SCTCPLNK para consultar el   sctplnk del NodeB filtador por NodeBID            
             List<Sctplnk> sctplnks = ReadSctplnkCsv.getNodeBSctplnk(_rnc,nodeB.get(0).getNodebid());
             if(CollectionUtils.isEmpty(sctplnks  )){
-                System.err.println("SCTPLNK: EL NODEB ID "+nodeB.get(0).getNodebid()+
-                                   " NO SE ENCUENTRA en la RNC "+_rnc+"\n");
+                /*System.err.println("SCTPLNK: EL NODEB ID "+nodeB.get(0).getNodebid()+
+                                   " NO SE ENCUENTRA en la RNC "+_rnc+"\n");*/
                  //System.exit(0);
             }
             // System.out.println("SCTPLNK 7 PASO! ");
             //Se consulta en la tabla IPRT el nexthop de la RED del Node B
             List<Iprt> ipRtNodes = ReadIprtCsv.getIprtNodeNexthop(_rnc,nodeNetwork);
-             if(CollectionUtils.isEmpty(ipRtNodes )){
+             if(CollectionUtils.isEmpty(ipRtNodes )){ //INTEGRACION DE UN NUEVO NODO AQUIII
                 System.err.println("IPRT : LA RED "+nodeNetwork+
                                    " NO SE ENCUENTRA en la RNC "+_rnc+"\n");
                  //System.exit(0);
@@ -165,13 +172,26 @@ public class RncGouScript {
             if(!CollectionUtils.isEmpty(_RncGouScriptDAO.getIppmList()))
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
             salidaGouScript += _RncGouScriptDAO.actIppm();
-
+            
+            Main.logger.info("CODE :200 RNC {} GOUSCRIPT INTEGRATE CREADO CON EXITO",_rnc);
+       /* }catch (NodebNotFoundException nodeb){
+            System.out.println(nodeb.getMessage().toString());
+        }catch(AtmTransException atm){
+            System.out.println("ATM TANSIP "+atm.getMessage());
+        
         }catch(IOException e){
             System.err.println("IOExceptio "+e.getMessage().toString());
         }catch(CsvConstraintViolationException e1){
             System.err.println("CsvConstraintViolationException "+e1.getMessage().toString());
         }catch(IllegalArgumentException e3){
-            System.err.println("IllegalArgumentException "+e3.getMessage().toString());
+            System.err.println("IllegalArgumentException "+e3.getMessage().toString());*/
+        
+        }catch (GouScriptException ex){
+            Main.logger.error("GouScriptException {} ", ex.getMessage().toString());
+            //System.out.println(ex.getMessage());
+        }catch (IOException e){
+            System.out.println(e);
+            Main.logger.error("IOException {} ", e.getMessage().toString());
         }finally{
             return salidaGouScript;
         }
@@ -192,19 +212,19 @@ public class RncGouScript {
             String _rnc, 
             short _srn, 
             short _sn, 
-            short _port) throws
-            Exception{
+            short _port) {
         String salidaGouScript ="";
         try{
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                 //System.exit(0);
+                 throw new GouScriptException("403","There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                //System.exit(0);
             }
 
             //Se consulta en la tabla IPPM si el nodeB ID tiene IPPM
-            List<Ippm> ippmNodes = ReadIppmCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
+            List<Ippm> ippmNodes = ReadIppmCsv.getIppmNode(_rnc,adjNodes.get(0).getAni());
             //SE ENCUENTRA VALIDADO MAS ABAJO
 
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo
@@ -228,10 +248,12 @@ public class RncGouScript {
                                    " NO SE ENCUENTRA NODEBIP \n");
                  //System.exit(0);
             }
-            nodeBIp.forEach(System.out::println);
+            //nodeBIp.forEach(System.out::println);
+            if (nodeBIp.get(0).getNBTRANTP().equals("ATMTRANS_IP"))
+                 throw new GouScriptException("400"," RNC ROLLBACK NODE B "+node_name.getNodeb_name()+" (ATM IPTRANS)");
             //Se calcula la red Network del NodeB
             String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
-                System.out.println("NODE B RNC NETWORK "+nodeNetwork+" \n");
+             //   System.out.println("NODE B RNC NETWORK "+nodeNetwork+" \n");
             //Se consulta la tabla SCTCPLNK para consultar el   sctplnk del NodeB filtador por NodeBID            
             List<Sctplnk> sctplnks = ReadSctplnkCsv.getNodeBSctplnk(_rnc,nodeB.get(0).getNodebid());
             if(CollectionUtils.isEmpty(sctplnks  )){
@@ -241,7 +263,7 @@ public class RncGouScript {
             }
             //Se consulta en la tabla IPRT el nexthop de la RED del Node B
             List<Iprt> ipRtNodes = ReadIprtCsv.getIprtNodeNexthop(_rnc,nodeNetwork);
-             if(CollectionUtils.isEmpty(ipRtNodes )){
+             if(CollectionUtils.isEmpty(ipRtNodes )){ //INTEGRACION DE UN NUEVO NODO
                 System.err.println("IPRT : LA RED "+nodeNetwork+
                                    " NO SE ENCUENTRA en la RNC "+_rnc+"\n");
                 // System.exit(0);
@@ -290,13 +312,26 @@ public class RncGouScript {
             if(!CollectionUtils.isEmpty(_RncGouRollbackScriptDAO .getIppmList()))
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
             salidaGouScript += _RncGouRollbackScriptDAO.actIppm();
-
+            
+            
+            Main.logger.info("CODE :200 RNC {} GOUSCRIPT ROLLBACK CREADO CON EXITO",_rnc);
+        /*}catch (NodebNotFoundException nodeb){
+            System.out.println(nodeb.getMessage().toString());
+        
+        }catch(AtmTransException atm){
+            System.out.println("ATM TANSIP "+atm.getMessage());
         }catch(IOException e){
             System.err.println("IOExceptio "+e.getMessage().toString());
         }catch(CsvConstraintViolationException e1){
             System.err.println("CsvConstraintViolationException "+e1.getMessage().toString());
         }catch(IllegalArgumentException e3){
-            System.err.println("IllegalArgumentException "+e3.getMessage().toString());
+            System.err.println("IllegalArgumentException "+e3.getMessage().toString());*/
+        }catch (GouScriptException ex){
+            System.out.println(ex.getMessage());
+            Main.logger.error("GouScriptException {} ", ex.getMessage().toString());
+        }catch (IOException e){
+            System.out.println(e);
+            Main.logger.error("IOException {} ", e.getMessage().toString());
         }finally{
             return salidaGouScript;
         }

@@ -28,6 +28,7 @@ public class ReadIpPathCsv {
     
     /**
      * METODO QUE RETORNA EL IPPATH DEL NODEB ANI DEL LADO DE LA RNC (FILTRA POR ANI)
+     * @param _rnc
      * @param aniNodeName
      * @return IPPATH DEL NODEB ANI DEL LADO DE LA RNC
      * @throws IOException
@@ -43,13 +44,10 @@ public class ReadIpPathCsv {
             HeaderColumnNameMappingStrategy<IpPath> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(IpPath.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    IpPath node  = (IpPath)t;                    
-                    return (node.getAni() == aniNodeName &&
-                            node.getFilename().contains(_rnc)); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                IpPath node  = (IpPath)t;
+                return (node.getAni() == aniNodeName &&
+                        node.getFilename().contains(_rnc)); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)
@@ -68,13 +66,14 @@ public class ReadIpPathCsv {
     }
     
     /**
+     * ARREGLAR
      * METODO QUE RETORNA EL IPPATH DEL NODEB NAME DEL LADO DEl NODEB (FILTRA POR NODE NAME)
-     * @param aniNodeName
+     * @param node_Name
      * @return IPPATH DEL NODEB NAME DEL LADO DEl NODEB
      * @throws IOException
      * @throws CsvConstraintViolationException 
      */
-    public static List<IpPath> getIpPathNodeName(String node_Name)throws IOException,CsvConstraintViolationException{
+    public static List<IpPath> getIpPathNodeName(String node_Name,String peerIp)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(Main.getDb_dir()+"/IPPATH.csv");
         List <IpPath> ipPathNodes;
@@ -84,12 +83,10 @@ public class ReadIpPathCsv {
             HeaderColumnNameMappingStrategy<IpPath> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(IpPath.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    IpPath node  = (IpPath)t;                    
-                    return (node.getFilename().contains(node_Name)); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                IpPath node  = (IpPath)t;
+                return (node.getFilename().contains(node_Name) &&
+                        node.getLocalIP().equals(peerIp)); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)

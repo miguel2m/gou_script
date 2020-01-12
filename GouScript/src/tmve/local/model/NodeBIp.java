@@ -68,8 +68,10 @@ public class NodeBIp {
 
     @Override
     public String toString() {
-        return "NodeBIp{" + "filename=" + filename + ", nodebid=" + nodebid + ", NBIPOAMIP=" + NBIPOAMIP + ", NBIPOAMMASK=" + NBIPOAMMASK + '}';
+        return "NodeBIp{" + "filename=" + filename + ", nodebid=" + nodebid + ", NBTRANTP=" + NBTRANTP + ", NBIPOAMIP=" + NBIPOAMIP + ", NBIPOAMMASK=" + NBIPOAMMASK + '}';
     }
+
+    
     
     
 }

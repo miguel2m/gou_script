@@ -17,6 +17,8 @@ public class Sctplnk {
     private String filename;
     @CsvBindByName (column = "LOCIP1")
     private String LOCIP1;
+    @CsvBindByName (column = "LOCIP")
+    private String LOCIP; //HACER MACTH DEL LADO DEL NODO CON EL PEERIP DE LA RNC
     @CsvBindByName (column = "SCTPLNKN")
     private String SCTPLNKN;
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
@@ -33,6 +35,14 @@ public class Sctplnk {
     @PreAssignmentProcessor(processor = ConvertEmptyOrBlankStringsToDefault.class, paramString = "-1")
     @CsvBindByName (column = "SCTPNO")
     private long sctpNo;
+
+    public String getLOCIP() {
+        return LOCIP;
+    }
+
+    public void setLOCIP(String LOCIP) {
+        this.LOCIP = LOCIP;
+    }
 
     public String getPeerIp() {
         return peerIp;
@@ -100,6 +110,8 @@ public class Sctplnk {
 
     @Override
     public String toString() {
-        return "Sctplnk{" + "filename=" + filename + ", LOCIP1=" + LOCIP1 + ", SCTPLNKN=" + SCTPLNKN + ", sn=" + sn + ", srn=" + srn + ", nodebid=" + nodebid + ", peerIp=" + peerIp + ", sctpNo=" + sctpNo + '}';
-    } 
+        return "Sctplnk{" + "filename=" + filename + ", LOCIP1=" + LOCIP1 + ", LOCIP=" + LOCIP + ", SCTPLNKN=" + SCTPLNKN + ", sn=" + sn + ", srn=" + srn + ", nodebid=" + nodebid + ", peerIp=" + peerIp + ", sctpNo=" + sctpNo + '}';
+    }
+
+    
 }

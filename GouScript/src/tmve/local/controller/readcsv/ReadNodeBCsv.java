@@ -35,13 +35,10 @@ public class ReadNodeBCsv {
             HeaderColumnNameMappingStrategy<NodeB> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(NodeB.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    NodeB node  = (NodeB)t;                    
-                    return (node.getFilename().contains(_rnc) &&
-                            node.getNodebname().contains(node_name) ); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                NodeB node  = (NodeB)t;
+                return (node.getFilename().contains(_rnc) &&
+                        node.getNodebname().contains(node_name) ); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)

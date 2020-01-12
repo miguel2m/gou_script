@@ -47,15 +47,12 @@ public class ReadIprtCsv {
             HeaderColumnNameMappingStrategy<Iprt> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(Iprt.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    Iprt node  = (Iprt)t;                    
-                    return (node.getFilename().contains(rnc) &&                    
-                            node.getNextpn() == port&&
-                            node.getSn() == sn && 
-                            node.getSrn() == srn ); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                Iprt node  = (Iprt)t;
+                return (node.getFilename().contains(rnc) &&
+                        node.getNextpn() == port&&
+                        node.getSn() == sn &&
+                        node.getSrn() == srn ); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)
@@ -77,7 +74,6 @@ public class ReadIprtCsv {
      * BUSCA EL NEXTHOP DEL NODEB
      * @param rnc
      * @param dstip
-     * @param remark
      * @return NEXTHOP DEL NODEB
      * @throws IOException
      * @throws CsvConstraintViolationException 
@@ -93,13 +89,10 @@ public class ReadIprtCsv {
             HeaderColumnNameMappingStrategy<Iprt> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(Iprt.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    Iprt node  = (Iprt)t;                    
-                    return (node.getFilename().contains(rnc) &&
-                            node.getDstip().equals(dstip)); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                Iprt node  = (Iprt)t;
+                return (node.getFilename().contains(rnc) &&
+                        node.getDstip().equals(dstip)); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)
@@ -120,9 +113,7 @@ public class ReadIprtCsv {
     
     /**
      * BUSCA EL RTIDX DEL NODEB Y CALCULA EL MAYOR
-     * @param rnc
-     * @param dstip
-     * @param remark
+     * @param _nodeBName
      * @return NEXTHOP DEL NODEB
      * @throws IOException
      * @throws CsvConstraintViolationException 
@@ -138,12 +129,9 @@ public class ReadIprtCsv {
             HeaderColumnNameMappingStrategy<Iprt> strategy
                     = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(Iprt.class);
-            BeanVerifier beanVerifier = new BeanVerifier() {
-                @Override
-                public boolean verifyBean(Object t) throws CsvConstraintViolationException {
-                    Iprt node  = (Iprt)t;                    
-                    return (node.getFilename().contains(_nodeBName)); //To change body of generated lambdas, choose Tools | Templates.
-                }
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                Iprt node  = (Iprt)t;
+                return (node.getFilename().contains(_nodeBName)); //To change body of generated lambdas, choose Tools | Templates.
             };
             
             CsvToBean csvToBean = new CsvToBeanBuilder(br)
@@ -163,4 +151,44 @@ public class ReadIprtCsv {
         
         
     }
+    
+    /**
+     * EN CASO DE QUE EL NETWORK RNC NO SE ENCUENTRE EN LA IPRT DEL NODO
+     * @param rnc
+     * @return IPRT DEL NODEB
+     * @throws IOException
+     * @throws CsvConstraintViolationException 
+     */
+    public static List<Iprt> getIprtNode(String rnc)
+            throws IOException,CsvConstraintViolationException{
+        
+        Path myPath = Paths.get(Main.getDb_dir()+"/IPRT.csv");
+        List <Iprt> iprtNodes;
+        try (BufferedReader br = Files.newBufferedReader(myPath,
+                StandardCharsets.UTF_8)) {
+
+            HeaderColumnNameMappingStrategy<Iprt> strategy
+                    = new HeaderColumnNameMappingStrategy<>();
+            strategy.setType(Iprt.class);
+            BeanVerifier beanVerifier = (BeanVerifier) (Object t) -> {
+                Iprt node  = (Iprt)t;
+                return (node.getFilename().contains(rnc)); //To change body of generated lambdas, choose Tools | Templates.
+            };
+            
+            CsvToBean csvToBean = new CsvToBeanBuilder(br)
+                    .withType(Iprt.class)
+                    .withMappingStrategy(strategy)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .withVerifier(beanVerifier)
+                    .build();
+            
+            iprtNodes= csvToBean.parse();
+            
+         
+            
+        }
+        return iprtNodes;
+        
+    }
+    
 }
