@@ -64,7 +64,7 @@ public class RncGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403","There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                throw new GouScriptException("403"," RNC INTEGRATE There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
                 // System.exit(0);
             }
             //System.out.println("ADJNODES 2 PASO! ");
@@ -173,7 +173,7 @@ public class RncGouScript {
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
             salidaGouScript += _RncGouScriptDAO.actIppm();
             
-            Main.logger.info("CODE :200 RNC {} GOUSCRIPT INTEGRATE CREADO CON EXITO",_rnc);
+            Main.logger.info("CODE :200 RNC {} INTEGRATE GOUSCRIPT  CREADO CON EXITO",_rnc);
        /* }catch (NodebNotFoundException nodeb){
             System.out.println(nodeb.getMessage().toString());
         }catch(AtmTransException atm){
@@ -218,8 +218,8 @@ public class RncGouScript {
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
-                System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                 throw new GouScriptException("403","There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+               // System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
+                 throw new GouScriptException("403"," RNC INTEGRATE There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
                 //System.exit(0);
             }
 
@@ -230,8 +230,8 @@ public class RncGouScript {
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo
             List<IpPath> ipPathNodes = ReadIpPathCsv.getIpPathNode(_rnc,adjNodes.get(0).getAni());
             if(CollectionUtils.isEmpty(ipPathNodes )){
-                System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
-                                   " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");
+                /*System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
+                                   " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");*/
                  //System.exit(0);
             }
             //Se consulta la tabla NODEB, el NODEB filtrado por nombre del nodeB, para buscar su ID-NODEB        
@@ -314,7 +314,7 @@ public class RncGouScript {
             salidaGouScript += _RncGouRollbackScriptDAO.actIppm();
             
             
-            Main.logger.info("CODE :200 RNC {} GOUSCRIPT ROLLBACK CREADO CON EXITO",_rnc);
+            Main.logger.info("CODE :200 RNC {}  ROLLBACK GOUSCRIPT  CREADO CON EXITO",_rnc);
         /*}catch (NodebNotFoundException nodeb){
             System.out.println(nodeb.getMessage().toString());
         

@@ -311,7 +311,10 @@ public class Main {
             System.exit(1);
         }
             
-       
+            System.setProperty("LOG_DIR", outputDirectory );
+            System.setProperty("LOG_FILE", _rnc );
+            logger = LoggerFactory.getLogger(Main.class);
+            
             if(showVersion == true ){
                 System.out.println("1.0.0");
                 System.out.println("Copyright (c) Telefonica Venezuela"+executionTime.getDate());
@@ -336,6 +339,7 @@ public class Main {
                 System.exit(0);
            } else {
             if (!Validator.isDirectory(_db_dir)) {
+                logger.error(" Cannot read DB folder " + _db_dir);
                 System.out.println("ERROR: Cannot read DB folder " + _db_dir);
                 System.exit(0);
             }
@@ -356,9 +360,7 @@ public class Main {
             }
             //System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, outputDirectory);
 
-            System.setProperty("LOG_DIR", outputDirectory );
-            System.setProperty("LOG_FILE", _rnc );
-            logger = LoggerFactory.getLogger(Main.class);
+            
             //logger.info("Example log from {}", Main.class.getSimpleName());
         try {
              List<Node> nodes = NodeList.getNodeBList(inputFile);
