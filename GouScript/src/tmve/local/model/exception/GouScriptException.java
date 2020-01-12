@@ -14,9 +14,31 @@ package tmve.local.model.exception;
  * @author Miguelangel
  */
 public class GouScriptException extends Exception{
-
-    public GouScriptException(String codigo, String string) {
-        super(codigo+" -> "+string);
+    String codigo;
+    String msj;
+    public GouScriptException(String codigo, String msj) {
+        super(msj);
+        this.codigo = codigo;
+        this.msj = msj;
     }  
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getMsj() {
+        return msj;
+    }
+
+    public void setMsj(String msj) {
+        this.msj = msj;
+    }
+
+    
+    
     
 }

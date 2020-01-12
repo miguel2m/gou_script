@@ -43,7 +43,7 @@ public class NodeBGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403","There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
                 //System.exit(0);
             }
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo (PARA OBTENER EL IPADDR DEL NODO EN LA RNC)
@@ -151,7 +151,8 @@ public class NodeBGouScript {
                              "LA NETWORK (DSTIP=VRF) "+ipPathNodesRNC.get(0).getIPADDR()+
                              " DE LA RNC "+_rnc+
                              " NO SE ENCUENTRA EN LA TABLA IPRT DEL NODE B "+node_name.getNodeb_name());
-                Main.logger.info("CODE :200 NodeB {} INTEGRATE GOUSCRIPT  CREADO CON EXITO",node_name.getNodeb_name());
+                Main.mdcSetup("200", node_name);
+                Main.logger.info("NodeB  {}  (GOUSCRIPT INTEGRATE)  CREADO CON EXITO",node_name.getNodeb_name());
         /*}catch(IOException e){
             System.err.println("IOExceptio "+e.getMessage().toString());
         }catch(CsvConstraintViolationException e1){
@@ -164,10 +165,11 @@ public class NodeBGouScript {
             System.out.println(e);*/
         }catch (GouScriptException ex){
             //System.out.println(ex.getMessage());
-            Main.logger.error("GouScriptException {} ", ex.getMessage());
+            Main.mdcSetup(ex.getCodigo(), node_name);
+            Main.logger.error("NodeB (GOUSCRIPT INTEGRATE) {} ", ex.getMessage());
         }catch (IOException e){
             //System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage().toString());
+            Main.logger.error("IOException {} ", e.getMessage());
         }finally{
             return result;
         }
@@ -186,7 +188,7 @@ public class NodeBGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403","There is not NODE B "+node_name.getNodeb_name()+" load into "+_rnc);
+                throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" load into "+_rnc);
                  //System.exit(0);
             }
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo 
@@ -271,7 +273,9 @@ public class NodeBGouScript {
                         "LA NETWORK (DSTIP=VRF) "+ipPathNodesRNC.get(0).getIPADDR()+
                         " DE LA RNC "+_rnc+
                         " NO SE ENCUENTRA EN LA TABLA IPRT DEL NODE B "+node_name.getNodeb_name());
-            Main.logger.info("CODE :200 NodeB  {}  ROLLBACK GOUSCRIPT  CREADO CON EXITO",node_name.getNodeb_name());
+            
+            Main.mdcSetup("200", node_name);
+            Main.logger.info("NodeB  {}  (GOUSCRIPT ROLLBACK)  CREADO CON EXITO",node_name.getNodeb_name());
         /*}catch(IOException e){
             System.err.println("IOExceptio "+e.getMessage().toString());
         }catch(CsvConstraintViolationException e1){
@@ -279,11 +283,12 @@ public class NodeBGouScript {
         }catch(IllegalArgumentException e3){
             System.err.println("IllegalArgumentException "+e3.getMessage().toString());*/
         }catch (GouScriptException ex){
+            Main.mdcSetup(ex.getCodigo(), node_name);
            // System.out.println(ex.getMessage());
-            Main.logger.error("GouScriptException {} ", ex.getMessage().toString());
+            Main.logger.error("NodeB (GOUSCRIPT ROLLBACK) {} ", ex.getMessage());
         }catch (IOException e){
             //System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage().toString());
+            Main.logger.error("IOException {} ", e.getMessage());
         }finally{
             return result;
         }

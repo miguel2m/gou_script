@@ -5,13 +5,11 @@
  */
 package tmve.local.controller.gouscript;
 
-import com.opencsv.exceptions.CsvConstraintViolationException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import tmve.local.controller.Validator;
 import tmve.local.controller.readcsv.ReadAdjnodeCsv;
 import tmve.local.controller.readcsv.ReadIpPathCsv;
@@ -47,9 +45,6 @@ public class RncGouScript {
      * @param _port
      * @param _vrf
      * @return GOU SCRIPT (RNC INTEGRATE)
-     * @throws IOException
-     * @throws CsvConstraintViolationException
-     * @throws Exception 
      */
     public static String createRNCGouScript(Node node_name, 
             String _rnc, 
@@ -57,6 +52,7 @@ public class RncGouScript {
             short _sn, 
             short _port, 
             String _vrf){
+        MDC.clear();
         String salidaGouScript ="";
         try{
             //System.out.println(" 1 PASO! ");
@@ -64,7 +60,7 @@ public class RncGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403"," RNC INTEGRATE There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
                 // System.exit(0);
             }
             //System.out.println("ADJNODES 2 PASO! ");
@@ -100,7 +96,7 @@ public class RncGouScript {
             // System.out.println("NODEB IP 6 PASO! ");
             // nodeBIp.forEach(System.out::println);
              if (nodeBIp.get(0).getNBTRANTP().equals("ATMTRANS_IP"))
-                 throw new GouScriptException("400"," RNC INTEGRATE NODE B "+node_name.getNodeb_name()+" (ATM IPTRANS)");
+                 throw new GouScriptException("400","NODE B "+node_name.getNodeb_name()+" ("+nodeBIp.get(0).getNBTRANTP()+")");
             //Se calcula la red Network del NodeB
             String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
                 //System.out.println("NODE B NETWORK "+nodeNetwork+" \n");
@@ -150,8 +146,13 @@ public class RncGouScript {
                                     +_RncGouScriptDAO.rmvIppath();
 
             ipRtNodes.get(0).setNexthop(ipRtNodesToMove.get(0).getNexthop());
+            
+            if(ipRtNodes.get(0).getRemark().equals("None"))
+                ipRtNodes.get(0).setRemark("To "+adjNodes.get(0).getName()+" L3");
+            
             ipRtNodes.get(0).setSrn(ipRtNodesToMove.get(0).getSrn());
             ipRtNodes.get(0).setSn(ipRtNodesToMove.get(0).getSn());
+            
             //SE GENERA LOS SCRIPT CORRESPONDIENTE A ADD IPRT (CON EL NEXTHOP DEL PUERTO DE LA RNC)
             salidaGouScript += _RncGouScriptDAO.addIprt();
             Iterator<Sctplnk> it = sctplnks.iterator();
@@ -172,8 +173,8 @@ public class RncGouScript {
             if(!CollectionUtils.isEmpty(_RncGouScriptDAO.getIppmList()))
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
             salidaGouScript += _RncGouScriptDAO.actIppm();
-            
-            Main.logger.info("CODE :200 RNC {} INTEGRATE GOUSCRIPT  CREADO CON EXITO",_rnc);
+            Main.mdcSetup("200", node_name);
+            Main.logger.info("RNC {}  (GOUSCRIPT INTEGRATE)  CREADO CON EXITO  NODEB ({}) ",_rnc,nodeBIp.get(0).getNBTRANTP());
        /* }catch (NodebNotFoundException nodeb){
             System.out.println(nodeb.getMessage().toString());
         }catch(AtmTransException atm){
@@ -187,11 +188,14 @@ public class RncGouScript {
             System.err.println("IllegalArgumentException "+e3.getMessage().toString());*/
         
         }catch (GouScriptException ex){
-            Main.logger.error("GouScriptException {} ", ex.getMessage().toString());
+            Main.mdcSetup(ex.getCodigo(), node_name);
+            Main.logger.error("RNC {} (GOUSCRIPT INTEGRATE) {} GouScriptException", _rnc,ex.getMessage());
+            
+
             //System.out.println(ex.getMessage());
         }catch (IOException e){
             System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage().toString());
+            Main.logger.error("IOException {} ", e.getMessage());
         }finally{
             return salidaGouScript;
         }
@@ -203,10 +207,7 @@ public class RncGouScript {
      * @param _srn
      * @param _sn
      * @param _port
-     * @return GOU SCRIPT (ROLLBACK)
-     * @throws IOException
-     * @throws CsvConstraintViolationException
-     * @throws Exception 
+     * @return GOU SCRIPT (ROLLBACK) 
      */
     public static String createRNCRollbackGouScript(Node node_name, 
             String _rnc, 
@@ -219,7 +220,7 @@ public class RncGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                // System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                 throw new GouScriptException("403"," RNC INTEGRATE There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                 throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
                 //System.exit(0);
             }
 
@@ -250,7 +251,7 @@ public class RncGouScript {
             }
             //nodeBIp.forEach(System.out::println);
             if (nodeBIp.get(0).getNBTRANTP().equals("ATMTRANS_IP"))
-                 throw new GouScriptException("400"," RNC ROLLBACK NODE B "+node_name.getNodeb_name()+" (ATM IPTRANS)");
+                 throw new GouScriptException("400","NODE B "+node_name.getNodeb_name()+" ("+nodeBIp.get(0).getNBTRANTP()+")");
             //Se calcula la red Network del NodeB
             String nodeNetwork =Validator.getNetwork(nodeBIp.get(0).getNBIPOAMIP(), nodeBIp.get(0).getNBIPOAMMASK());
              //   System.out.println("NODE B RNC NETWORK "+nodeNetwork+" \n");
@@ -287,6 +288,7 @@ public class RncGouScript {
             //Se asigna el DSTIP del nodeB al puerto de la RNC
             ipRtNodesToRollback.get(0).setDstip(nodeNetwork);
             _RncGouRollbackScriptDAO .setIprt(ipRtNodesToRollback.get(0));
+             
             _RncGouRollbackScriptDAO .setSctplnk(sctplnks);
             _RncGouRollbackScriptDAO .setIppath(ipPathNodes);
             //Si el nodoB posee IPPM se procede a realizar el DEA y Posteriormente EL ACT
@@ -297,7 +299,9 @@ public class RncGouScript {
                                 +_RncGouRollbackScriptDAO.rmvIppath();
             else salidaGouScript += _RncGouRollbackScriptDAO.rmvIprt()
                                     +_RncGouRollbackScriptDAO.rmvIppath();
-
+            
+            if(ipRtNodes.get(0).getRemark().equals("None"))
+                ipRtNodes.get(0).setRemark("To "+adjNodes.get(0).getName()+" L3");
             _RncGouRollbackScriptDAO.setIprt(ipRtNodes.get(0));
             _RncGouRollbackScriptDAO.setSctplnk(sctplnks);
             _RncGouRollbackScriptDAO.setIppath(ipPathNodes);
@@ -313,8 +317,8 @@ public class RncGouScript {
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
             salidaGouScript += _RncGouRollbackScriptDAO.actIppm();
             
-            
-            Main.logger.info("CODE :200 RNC {}  ROLLBACK GOUSCRIPT  CREADO CON EXITO",_rnc);
+            Main.mdcSetup("200", node_name);
+            Main.logger.info("RNC {}  (GOUSCRIPT ROLLBACK)  CREADO CON EXITO  NODEB ({}) ",_rnc,nodeBIp.get(0).getNBTRANTP());
         /*}catch (NodebNotFoundException nodeb){
             System.out.println(nodeb.getMessage().toString());
         
@@ -327,11 +331,12 @@ public class RncGouScript {
         }catch(IllegalArgumentException e3){
             System.err.println("IllegalArgumentException "+e3.getMessage().toString());*/
         }catch (GouScriptException ex){
+            Main.mdcSetup(ex.getCodigo(), node_name);
             System.out.println(ex.getMessage());
-            Main.logger.error("GouScriptException {} ", ex.getMessage().toString());
+            Main.logger.error("RNC {} (GOUSCRIPT ROLLBACK) {} GouScriptException", _rnc,ex.getMessage());
         }catch (IOException e){
             System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage().toString());
+            Main.logger.error("IOException {} ", e.getMessage());
         }finally{
             return salidaGouScript;
         }

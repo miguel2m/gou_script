@@ -26,6 +26,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import tmve.local.controller.ExecutionTime;
 import tmve.local.controller.NodeList;
@@ -33,6 +34,7 @@ import tmve.local.controller.Validator;
 import tmve.local.controller.gouscript.NodeBGouScript;
 import tmve.local.controller.gouscript.RncGouScript;
 import tmve.local.model.Node;
+import tmve.local.model.exception.GouScriptException;
 
 
 /**
@@ -71,7 +73,12 @@ public class Main {
     }
     
     
-    
+    public static void mdcSetup(String codigo, Node nodeB){
+            MDC.remove("NODEB");
+            MDC.remove("CODIGO");
+            MDC.put("NODEB", nodeB.getNodeb_name());
+            MDC.put("CODIGO", codigo);
+    }
         /**
      * Tracks Managed Object attributes to write to file. This is dictated by
      * the first instance of the MO found.
