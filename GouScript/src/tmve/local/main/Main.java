@@ -6,14 +6,12 @@
 package tmve.local.main;
 
 
-import ch.qos.logback.classic.util.ContextInitializer;
 import com.opencsv.exceptions.CsvConstraintViolationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +38,6 @@ import tmve.local.controller.Validator;
 import tmve.local.controller.gouscript.NodeBGouScript;
 import tmve.local.controller.gouscript.RncGouScript;
 import tmve.local.model.Node;
-import tmve.local.model.exception.GouScriptException;
 
 
 /**
