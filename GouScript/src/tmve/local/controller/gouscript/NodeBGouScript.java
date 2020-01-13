@@ -38,13 +38,14 @@ public class NodeBGouScript {
      */
     public static List<String> createNodeBGouScript(Node node_name, String _vrf,String _rnc){
         List<String> result = new ArrayList<>();
+        boolean flag = false;
         try{
-            boolean flag = false; //LA RED DE LA RNC NO SE ENCUENTRA EN EL IPRT DEL NODOB
+             //LA RED DE LA RNC NO SE ENCUENTRA EN EL IPRT DEL NODOB
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                throw new GouScriptException("403"," EL NODE B "+node_name.getNodeb_name()+" NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc);
                 //System.exit(0);
             }
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo (PARA OBTENER EL IPADDR DEL NODO EN LA RNC)
@@ -53,6 +54,10 @@ public class NodeBGouScript {
                 /*System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
                                    " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");*/
                  //System.exit(0);*
+                 throw new GouScriptException("404"," EL NODE B "+node_name.getNodeb_name()+
+                        " CON ANI "+adjNodes.get(0).getAni()+
+                        " NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc+
+                        " PUEDE SER QUE EL NODOB SE ENCUENTRE EN UN IPPOOL");
             }
              //Se consulta la tabla SCTCPLNK para consultar el   sctplnk del NodeB filtador por Nombre del NODEB      
             List<Sctplnk> sctplnks = ReadSctplnkCsv.getNodeBSctplnkNodeIntegrate(
@@ -61,7 +66,7 @@ public class NodeBGouScript {
              if(CollectionUtils.isEmpty(sctplnks  )){
                 /*System.err.println("SCTPLNK: EL NODEB ID "+node_name.getNodeb_name()+
                                    " NO SE ENCUENTRA en la tabla SCTPLNK "+_rnc+"\n");*/
-                throw new GouScriptException("402"," There is not NODE B "+node_name.getNodeb_name()+" load into DATA BASE");
+                throw new GouScriptException("402"," EL NODE B "+node_name.getNodeb_name()+" NO ESTA CARGADO EN LA BASE DE DATOS");
                  //System.exit(0);
             }
             // sctplnks .forEach(System.out::println);
@@ -149,7 +154,7 @@ public class NodeBGouScript {
                 
                 if(flag)
                      throw new GouScriptException("401",
-                             "LA NETWORK (DSTIP=VRF) "+ipPathNodesRNC.get(0).getIPADDR()+
+                             " ADVERTENCIA LA NETWORK (DSTIP=VRF) "+ipPathNodesRNC.get(0).getIPADDR()+
                              " DE LA RNC "+_rnc+
                              " NO SE ENCUENTRA EN LA TABLA IPRT DEL NODE B "+node_name.getNodeb_name());
                 Main.mdcSetup("200", node_name);
@@ -168,10 +173,12 @@ public class NodeBGouScript {
             //System.out.println(ex.getMessage());
             Main.mdcSetup(ex.getCodigo(), node_name);
             Main.logger.error("NodeB (GOUSCRIPT INTEGRATE) {} ", ex.getMessage());
-            result.add("CODIGO "+ex.getCodigo()+"NodeB (GOUSCRIPT INTEGRATE) "+ex.getMessage());
+            if(flag)
+                result.add("CODIGO "+ex.getCodigo()+" NodeB (GOUSCRIPT INTEGRATE) "+ex.getMessage());
         }catch (IOException e){
-            //System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage());
+            Main.mdcSetup("500", node_name);
+            Main.logger.error("NODE B INTEGRATE IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE FALTA: {}", e.getMessage());
+            //result.add(" CODIGO 500 NODE B INTEGRATE IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE, FALTA: "+e.getMessage());
         }finally{
             return result;
         }
@@ -184,13 +191,14 @@ public class NodeBGouScript {
      */
     public static List <String> createNodeBGouScriptRollback(String _rnc,Node node_name){
         List <String> result = new ArrayList<>();
+        boolean flag = false;
         try{
-            boolean flag = false;
+            
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" load into "+_rnc);
+                throw new GouScriptException("403"," EL NODE B "+node_name.getNodeb_name()+" NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc);
                  //System.exit(0);
             }
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por ANI del nodo 
@@ -200,6 +208,10 @@ public class NodeBGouScript {
                 /*System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
                                    " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");*/
                  //System.exit(0);
+                 throw new GouScriptException("404"," EL NODE B "+node_name.getNodeb_name()+
+                        " CON ANI "+adjNodes.get(0).getAni()+
+                        " NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc+
+                        " PUEDE SER QUE EL NODOB SE ENCUENTRE EN UN IPPOOL");
             }
             //Se consulta la tabla SCTCPLNK para consultar el   sctplnk del NodeB filtador por Nombre del NODEB      
             List<Sctplnk> sctplnks = ReadSctplnkCsv.getNodeBSctplnkNodeIntegrate(
@@ -209,7 +221,7 @@ public class NodeBGouScript {
              if(CollectionUtils.isEmpty(sctplnks  )){
                /* System.err.println("SCTPLNK: EL NODEB ID "+node_name.getNodeb_name()+
                                    " NO SE ENCUENTRA en la tabla SCTPLNK "+_rnc+"\n");*/
-                throw new GouScriptException("402"," There is not NODE B "+node_name.getNodeb_name()+" load into DATA BASE");
+                throw new GouScriptException("402"," EL NODE B "+node_name.getNodeb_name()+" NO ESTA CARGADO EN LA BASE DE DATOS");
                  //System.exit(0);
             }
             //  sctplnks .forEach(System.out::println);
@@ -272,7 +284,7 @@ public class NodeBGouScript {
 
             if(flag)
                 throw new GouScriptException("401",
-                        "LA NETWORK (DSTIP=VRF) "+ipPathNodesRNC.get(0).getIPADDR()+
+                        " ADVERTENCIA LA NETWORK (DSTIP=VRF) "+ipPathNodesRNC.get(0).getIPADDR()+
                         " DE LA RNC "+_rnc+
                         " NO SE ENCUENTRA EN LA TABLA IPRT DEL NODE B "+node_name.getNodeb_name());
             
@@ -288,10 +300,12 @@ public class NodeBGouScript {
             Main.mdcSetup(ex.getCodigo(), node_name);
            // System.out.println(ex.getMessage());
             Main.logger.error("NodeB (GOUSCRIPT ROLLBACK) {} ", ex.getMessage());
-            result.add("CODIGO "+ex.getCodigo()+"NodeB (GOUSCRIPT ROLLBACK) "+ex.getMessage());
+            if (flag)
+                result.add("CODIGO "+ex.getCodigo()+" NodeB (GOUSCRIPT ROLLBACK) "+ex.getMessage());
         }catch (IOException e){
-            //System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage());
+            Main.mdcSetup("500", node_name);
+            Main.logger.error("NODE B ROLLBACK IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE FALTA: {}", e.getMessage());
+            //result.add("CODIGO 500 NODE B ROLLBACK IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE, FALTA: "+e.getMessage());
         }finally{
             return result;
         }

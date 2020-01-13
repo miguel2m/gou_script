@@ -51,10 +51,10 @@ public class NodeGouScriptDAO {
      */
     public List<String> lstCommand(){
         List<String> script = new ArrayList<>();
-               script.add("LST IPRT:;\n");
-               script.add("LST IPPATH:;\n");
-               script.add("LST SCTPLNK:;\n");
-               script.add("LST OMCH:;\n");
+               script.add("LST IPRT:;");
+               script.add("LST IPPATH:;");
+               script.add("LST SCTPLNK:;");
+               script.add("LST OMCH:;");
          return script ;
     }
     /**
@@ -68,7 +68,7 @@ public class NodeGouScriptDAO {
                 ",DSTIP=\""+iprt.getDstip()+"\""+
                 ",DSTMASK=\""+iprt.getDstmask()+"\""+
                 ",RTTYPE="+iprt.getRtType()+
-                ",NEXTHOP=\""+iprt.getNexthop()+"\";\n";
+                ",NEXTHOP=\""+iprt.getNexthop()+"\";";
     }
     
     
@@ -82,7 +82,7 @@ public class NodeGouScriptDAO {
         while (it.hasNext()){
             Sctplnk temp = it.next();
             script.add("MOD SCTPLNK:SCTPNO="+temp.getSctpNo()+
-                ",PEERIP=\""+temp.getPeerIp()+"\";\n");
+                ",PEERIP=\""+temp.getPeerIp()+"\";");
            
         }
         return script;
@@ -99,7 +99,7 @@ public class NodeGouScriptDAO {
            IpPath temp = it.next();
            script.add("MOD IPPATH:PATHID="+temp.getPATHID()+
                     ",SN="+temp.getSn()+
-                    ",PEERIP=\""+temp.getPeerIp()+"\";\n");        
+                    ",PEERIP=\""+temp.getPeerIp()+"\";");        
         }
         return script;
     }
@@ -108,7 +108,7 @@ public class NodeGouScriptDAO {
      * @return RMV IPRT DEL LADO DEL NODO
      */
     public String rmvIprt(){
-        return "RMV IPRT:RTIDX="+iprt.getRtIdx()+";//*** | PLEASE CHECK | ***\n";
+        return "RMV IPRT:RTIDX="+iprt.getRtIdx()+";//*** | PLEASE CHECK | ***";
     }
     
     public String ping(){

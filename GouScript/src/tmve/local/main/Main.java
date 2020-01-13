@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -375,75 +377,93 @@ public class Main {
         try  {
              List<Node> nodes = NodeList.getNodeBList(inputFile);
              nodes.forEach(System.out::println);
+             System.out.println("---- TOTAL DE NODOS "+nodes.size()+"----");
              Iterator<Node> it = nodes.iterator();
              
-            do{
+            while (it.hasNext()){
                 
                 Node temp =it.next();
                 
                 String outFile= "./"+outputDirectory+
-                        "/"+temp.getNodeb_name()+"_GOUSCRIPT.xlsx";
+                                "/"+temp.getNodeb_name()+
+                                "_"+_rnc+
+                                "_GOUSCRIPT.xlsx";
                 XSSFWorkbook wb = new XSSFWorkbook();
                  
                     System.out.println("----"+temp.getNodeb_name()+" RNC Integrate----");
-                        /*RncGouScript.createRNCGouScript(temp,
-                                _rnc,
-                                _srn,
-                                _sn,
-                                _p,
-                                _vrfIp)
-                                .forEach(System.out::print);*/
-                    
-                    ExportToExcel.exportGouScript(wb,
+                    List <String> createRNCIntegrate =  RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp);
+                    if(!CollectionUtils.isEmpty( createRNCIntegrate )){ 
+                         ExportToExcel.exportGouScript(wb,
                             temp, 
                             outputDirectory, 
-                            RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp), 
+                            createRNCIntegrate, 
                             "RNC INTEGRATE");
+                     }                   
                     System.out.println(" RNC INTEGRATE DONE");
+                    System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
+                        //System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
+                        //NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp).forEach(System.out::print);
+                    List <String> createRNCRollback =RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p);
+                    if(!CollectionUtils.isEmpty( createRNCRollback)){ 
+                         ExportToExcel.exportGouScript(wb,
+                            temp, 
+                            outputDirectory, 
+                            createRNCRollback, 
+                            "RNC ROLLBACK");
+                     }
+                        
+                        System.out.println(" NODEB ROLLBACK DONE");
                     System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
                     //System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
                         //NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc) .forEach(System.out::print);
-                        ExportToExcel.exportGouScript(wb,
-                            temp, 
-                            outputDirectory, 
-                            NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc), 
-                            "NODEB INTEGRATE");
+                        List <String> createNODEBIntegrate = NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc);
+                        if(!CollectionUtils.isEmpty( createNODEBIntegrate)){ 
+                            ExportToExcel.exportGouScript(wb,
+                                temp, 
+                                outputDirectory, 
+                                createNODEBIntegrate, 
+                                "NODEB INTEGRATE");
+                        }
                         System.out.println(" NODEB INTEGRATE DONE");
                     System.out.println("----"+temp.getNodeb_name()+" RNC Rollback----");
                     //System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
                         //RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p).forEach(System.out::print);
-                        ExportToExcel.exportGouScript(wb,
-                            temp, 
-                            outputDirectory, 
-                            RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p), 
-                            "RNC ROLLBACK");
+                        List <String> createNODEBRollback =  NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp);
+                        if(!CollectionUtils.isEmpty( createNODEBRollback)){ 
+                            ExportToExcel.exportGouScript(wb,
+                                temp, 
+                                outputDirectory, 
+                                createNODEBRollback, 
+                                "NODEB ROLLBACK");
+                        }
                         System.out.println(" RNC ROLLBACK DONE");
-                    System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
-                        //System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
-                        //NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp).forEach(System.out::print);
-                        ExportToExcel.exportGouScript(wb,
-                            temp, 
-                            outputDirectory, 
-                            NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp), 
-                            "NODEB ROLLBACK");
-                        System.out.println(" NODEB ROLLBACK DONE");
+                    
                         System.out.println("\n");
                 
-                try (OutputStream fileOut = new FileOutputStream(outFile)) {
+                if (wb.getNumberOfSheets() != 0 ) {
+                    try (OutputStream fileOut = new FileOutputStream(outFile)) {
                         wb.write(fileOut);
                         wb.close();
-                 }                        
-            }while (it.hasNext());
+                    } catch (IOException e1) {
+
+                        mdcSetup("501", temp);
+                        logger.error("IOException ERROR EN EXPORTAR EL ARCHIVO EXCEL DEBIDO: {}", e1.getMessage());
+
+                    }
+                }
+            }
             
             //script.processFileOrDirectory();
        /* }catch (IllegalArgumentException e1){
              System.out.println(" "+e1.getMessage().toString()+" "+e1.getCause());*/
-        } catch (FileNotFoundException ex) {
+       // } catch (FileNotFoundException ex) {
             //Logger.getLogger(ExportToExcel.class.getName()).log(Level.SEVERE, null, ex);
-        }catch (CsvConstraintViolationException e2) {
-             System.out.println(" "+e2.getMessage().toString());
-        }catch (IOException e) {
-             System.out.println(" "+e.getMessage().toString());
+        }catch (Exception e2){
+            Node errorGeneral = new Node ();
+                 errorGeneral.setNodeb_name("Error General");
+            mdcSetup("502", errorGeneral);
+            logger.error("Exception ERROR GENERAL: {}", e2);
+                  
         }
             //System.out.println("Newtork: "+Validator.getNetwork("10.18.50.82", "255.255.255.252"));
             System.out.println(executionTime.getExecutionTime());

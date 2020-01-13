@@ -66,7 +66,7 @@ public class RncGouScriptDAO {
         while (it.hasNext()){
             Ippm temp = it.next();
             script.add( "DEA IPPM: ANI="+temp.getAni()+
-                          ",PATHID="+temp.getPathId() +";\n");
+                          ",PATHID="+temp.getPathId() +";");
             
            
         }
@@ -83,7 +83,7 @@ public class RncGouScriptDAO {
                 ",DSTIP=\""+iprt.getDstip()+"\""+
                 ",DSTMASK=\""+iprt.getDstmask()+"\""+
                 ",NEXTHOP=\""+iprt.getNexthop()+"\""+
-                ",FORCEEXECUTE=YES;\n";   
+                ",FORCEEXECUTE=YES;";   
     }
     /**
      * SE ELIMINA EL IPPATH ACTUAL DEL NODOB
@@ -95,7 +95,7 @@ public class RncGouScriptDAO {
         while (it.hasNext()){
             IpPath temp = it.next();
             script .add( "RMV IPPATH: ANI="+temp.getAni()+
-                          ",PATHID="+temp.getPATHID()+";\n");
+                          ",PATHID="+temp.getPATHID()+";");
             
            
         }
@@ -114,7 +114,7 @@ public class RncGouScriptDAO {
                 ",SRN="+iprt.getSrn()+
                 ",SN="+iprt.getSn()+
                 ",REMARK=\""+iprt.getRemark()+"\""+
-                ",PRIORITY=HIGH;\n";
+                ",PRIORITY=HIGH;";
     }
     /**
      * LOCIP1= IP VRF
@@ -128,7 +128,7 @@ public class RncGouScriptDAO {
             script .add( "MOD SCTPLNK:SRN="+temp.getSrn()+
                 ",SN="+temp.getSn()+
                 ",SCTPLNKN="+temp.getSCTPLNKN()+
-                ",LOCIP1=\""+temp.getLOCIP1()+"\";\n");
+                ",LOCIP1=\""+temp.getLOCIP1()+"\";");
            
         }
         return script;
@@ -156,7 +156,7 @@ public class RncGouScriptDAO {
                ",ITFT="+temp.getITFT()+
                ",TRANST="+temp.getTRANST()+
                ",TRMLOADTHINDEX="+temp.getTRMLOADTHINDEX()+
-               ",REMARK=\""+temp.getREMARK()+"\";\n");
+               ",REMARK=\""+temp.getREMARK()+"\";");
            
         }
         return script;
@@ -175,7 +175,7 @@ public class RncGouScriptDAO {
                ",PATHID="+temp.getPathId()+
                ",ISQOSPATH="+temp.getIsqosPath()+
                ",PMPRD="+temp.getPmPrd()+
-               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+";\n");
+               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+";");
         }
         return script;
     }

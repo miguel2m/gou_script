@@ -61,7 +61,7 @@ public class RncGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                 //System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                throw new GouScriptException("403"," EL NODE B "+node_name.getNodeb_name()+" NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc);
                 // System.exit(0);
             }
             //System.out.println("ADJNODES 2 PASO! ");
@@ -74,6 +74,10 @@ public class RncGouScript {
             if(CollectionUtils.isEmpty(ipPathNodes )){
                 /*System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
                                    " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");*/
+                throw new GouScriptException("404"," EL NODE B "+node_name.getNodeb_name()+
+                        " CON ANI "+adjNodes.get(0).getAni()+
+                        " NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc+
+                        " PUEDE SER QUE EL NODOB SE ENCUENTRE EN UN IPPOOL");
                  //System.exit(0);
             }
             // System.out.println(" IPPATH 4 PASO! ");
@@ -195,12 +199,13 @@ public class RncGouScript {
         }catch (GouScriptException ex){
             Main.mdcSetup(ex.getCodigo(), node_name);
             Main.logger.error("RNC {} (GOUSCRIPT INTEGRATE) {} GouScriptException", _rnc,ex.getMessage());
-            salidaGouScript.add("CODIGO:"+ex.getCodigo()+"RNC"+_rnc+"(GOUSCRIPT INTEGRATE) GouScriptException"+ex.getMessage());
+            //salidaGouScript.add("CODIGO:"+ex.getCodigo()+" RNC "+_rnc+"(GOUSCRIPT INTEGRATE) GouScriptException"+ex.getMessage());
 
             //System.out.println(ex.getMessage());
         }catch (IOException e){
-            System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage());
+            Main.mdcSetup("500", node_name);
+            Main.logger.error(" RNC (GOUSCRIPT INTEGRATE)IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE, FALTA: {}", e.getMessage());
+            //salidaGouScript.add("CODIGO 500  RNC (GOUSCRIPT INTEGRATE) IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE, FALTA: "+e.getMessage());
         }finally{
             return salidaGouScript;
         }
@@ -225,7 +230,7 @@ public class RncGouScript {
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
             if(CollectionUtils.isEmpty(adjNodes )){
                // System.err.println("ADJNODE: NODEB "+node_name.getNodeb_name()+" NO SE ENCUENTRA EN ADJNODES \n");
-                 throw new GouScriptException("403"," There is not NODE B "+node_name.getNodeb_name()+" into "+_rnc);
+                 throw new GouScriptException("403"," EL NODE B "+node_name.getNodeb_name()+" NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc);
                 //System.exit(0);
             }
 
@@ -239,6 +244,10 @@ public class RncGouScript {
                 /*System.err.println("IPPATH: EL ANI "+adjNodes.get(0).getAni()+
                                    " NO SE ENCUENTRA EN LA RNC "+_rnc+" \n");*/
                  //System.exit(0);
+                 throw new GouScriptException("404"," EL NODE B "+node_name.getNodeb_name()+
+                        " CON ANI "+adjNodes.get(0).getAni()+
+                        " NO SE ENCUENTRA CARGADA EN LA RNC "+_rnc+
+                        " PUEDE SER QUE EL NODOB SE ENCUENTRE EN UN IPPOOL");
             }
             //Se consulta la tabla NODEB, el NODEB filtrado por nombre del nodeB, para buscar su ID-NODEB        
             List<NodeB> nodeB = ReadNodeBCsv.getNodeBId(_rnc,node_name.getNodeb_name());
@@ -338,12 +347,14 @@ public class RncGouScript {
             System.err.println("IllegalArgumentException "+e3.getMessage().toString());*/
         }catch (GouScriptException ex){
             Main.mdcSetup(ex.getCodigo(), node_name);
-            System.out.println(ex.getMessage());
+            //System.out.println(ex.getMessage());
             Main.logger.error("RNC {} (GOUSCRIPT ROLLBACK) {} GouScriptException", _rnc,ex.getMessage());
-            salidaGouScript.add("CODIGO:"+ex.getCodigo()+"RNC"+_rnc+"(GOUSCRIPT ROLLBACK) GouScriptException"+ex.getMessage());
+            //salidaGouScript.add("CODIGO:"+ex.getCodigo()+" RNC "+_rnc+"(GOUSCRIPT ROLLBACK) GouScriptException"+ex.getMessage());
         }catch (IOException e){
-            System.out.println(e);
-            Main.logger.error("IOException {} ", e.getMessage());
+            //System.out.println(e);
+            Main.mdcSetup("500", node_name);
+            Main.logger.error(" RNC (GOUSCRIPT ROLLBACK) IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE, FALTA: {}", e.getMessage());
+            //salidaGouScript.add("CODIGO 500  RNC (GOUSCRIPT ROLLBACK) IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE, FALTA: "+e.getMessage());
         }finally{
             return salidaGouScript;
         }
