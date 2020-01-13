@@ -5,6 +5,7 @@
  */
 package tmve.local.model.script;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import tmve.local.model.IpPath;
@@ -48,11 +49,13 @@ public class NodeGouScriptDAO {
      * METODO QUE RETORNA LST DE LOS COAMNDO (IPRT,IPPATH,STCPLNK,OMCH)
      * @return LST DEL LADO DEL NODOB
      */
-    public String lstCommand(){
-        return "LST IPRT:;\n"+
-               "LST IPPATH:;\n"+
-               "LST SCTPLNK:;\n"+
-               "LST OMCH:;\n";
+    public List<String> lstCommand(){
+        List<String> script = new ArrayList<>();
+               script.add("LST IPRT:;\n");
+               script.add("LST IPPATH:;\n");
+               script.add("LST SCTPLNK:;\n");
+               script.add("LST OMCH:;\n");
+         return script ;
     }
     /**
      *  METODO DEL COMANDO ADD IRT DE LADO DEL NODOB (DSTIP = IP VRF)
@@ -73,13 +76,13 @@ public class NodeGouScriptDAO {
      * METODO DEL COMANDO  MOD SCTPLNK DEL LADO DEL NODOB PEERIP = IP VRF
      * @return MOD SCTPLNK Script para NODEB INTEGRATE O ROLLBACK 
      */
-    public String modSctplnk(){
-        String script = "";
+    public List<String> modSctplnk(){
+        List<String> script = new ArrayList<>();
         Iterator<Sctplnk> it = sctplnks.iterator();
         while (it.hasNext()){
             Sctplnk temp = it.next();
-            script += "MOD SCTPLNK:SCTPNO="+temp.getSctpNo()+
-                ",PEERIP=\""+temp.getPeerIp()+"\";\n";
+            script.add("MOD SCTPLNK:SCTPNO="+temp.getSctpNo()+
+                ",PEERIP=\""+temp.getPeerIp()+"\";\n");
            
         }
         return script;
@@ -89,14 +92,14 @@ public class NodeGouScriptDAO {
      * PEERIP = IP VRF
      * @return MOD IPPATH SCRIPT PARA EL NODEB INTEGRATE O ROLLBACK
      */
-    public String addIpath(){
-        String script = "";
+    public List<String> addIpath(){
+        List<String> script = new ArrayList<>();
         Iterator<IpPath> it = ippaths.iterator();
         while (it.hasNext()){
            IpPath temp = it.next();
-           script +="MOD IPPATH:PATHID="+temp.getPATHID()+
+           script.add("MOD IPPATH:PATHID="+temp.getPATHID()+
                     ",SN="+temp.getSn()+
-                    ",PEERIP=\""+temp.getPeerIp()+"\";\n";        
+                    ",PEERIP=\""+temp.getPeerIp()+"\";\n");        
         }
         return script;
     }

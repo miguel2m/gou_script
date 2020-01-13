@@ -9,7 +9,11 @@ package tmve.local.main;
 import ch.qos.logback.classic.util.ContextInitializer;
 import com.opencsv.exceptions.CsvConstraintViolationException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,11 +28,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import tmve.local.controller.ExecutionTime;
+import tmve.local.controller.ExportToExcel;
 import tmve.local.controller.NodeList;
 import tmve.local.controller.Validator;
 import tmve.local.controller.gouscript.NodeBGouScript;
@@ -369,7 +375,7 @@ public class Main {
 
             
             //logger.info("Example log from {}", Main.class.getSimpleName());
-        try {
+        try  {
              List<Node> nodes = NodeList.getNodeBList(inputFile);
              nodes.forEach(System.out::println);
              Iterator<Node> it = nodes.iterator();
@@ -377,23 +383,66 @@ public class Main {
             do{
                 
                 Node temp =it.next();
-               
-                    System.out.println("----"+temp.getNodeb_name()+" RNC Integrate----");
-                    System.out.println( RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp));
-                    System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
-                    System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
-                    System.out.println("----"+temp.getNodeb_name()+" RNC Rollback----");
-                    System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
-                    System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
-                     System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
-                     System.out.println("\n");
-                 //System.out.println("SCRIPT RNC \n"+RncGouScript.createRNCGouScript(temp, _rnc));
                 
+                String outFile= "./"+outputDirectory+
+                        "/"+temp.getNodeb_name()+"_GOUSCRIPT.xlsx";
+                XSSFWorkbook wb = new XSSFWorkbook();
+                 
+                    System.out.println("----"+temp.getNodeb_name()+" RNC Integrate----");
+                        /*RncGouScript.createRNCGouScript(temp,
+                                _rnc,
+                                _srn,
+                                _sn,
+                                _p,
+                                _vrfIp)
+                                .forEach(System.out::print);*/
+                    
+                    ExportToExcel.exportGouScript(wb,
+                            temp, 
+                            outputDirectory, 
+                            RncGouScript.createRNCGouScript(temp, _rnc,_srn,_sn,_p,_vrfIp), 
+                            "RNC INTEGRATE");
+                    System.out.println(" RNC INTEGRATE DONE");
+                    System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
+                    //System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
+                        //NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc) .forEach(System.out::print);
+                        ExportToExcel.exportGouScript(wb,
+                            temp, 
+                            outputDirectory, 
+                            NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc), 
+                            "NODEB INTEGRATE");
+                        System.out.println(" NODEB INTEGRATE DONE");
+                    System.out.println("----"+temp.getNodeb_name()+" RNC Rollback----");
+                    //System.out.println( RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p));
+                        //RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p).forEach(System.out::print);
+                        ExportToExcel.exportGouScript(wb,
+                            temp, 
+                            outputDirectory, 
+                            RncGouScript.createRNCRollbackGouScript(temp, _rnc,_srn,_sn,_p), 
+                            "RNC ROLLBACK");
+                        System.out.println(" RNC ROLLBACK DONE");
+                    System.out.println("----"+temp.getNodeb_name()+" NODEB Rollback----");
+                        //System.out.println( NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp));
+                        //NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp).forEach(System.out::print);
+                        ExportToExcel.exportGouScript(wb,
+                            temp, 
+                            outputDirectory, 
+                            NodeBGouScript.createNodeBGouScriptRollback(_rnc,temp), 
+                            "NODEB ROLLBACK");
+                        System.out.println(" NODEB ROLLBACK DONE");
+                        System.out.println("\n");
+                
+                try (OutputStream fileOut = new FileOutputStream(outFile)) {
+                        wb.write(fileOut);
+                        wb.close();
+                 }                        
             }while (it.hasNext());
             
             //script.processFileOrDirectory();
        /* }catch (IllegalArgumentException e1){
              System.out.println(" "+e1.getMessage().toString()+" "+e1.getCause());*/
+        } catch (FileNotFoundException ex) {
+            //Logger.getLogger(ExportToExcel.class.getName()).log(Level.SEVERE, null, ex);
         }catch (CsvConstraintViolationException e2) {
              System.out.println(" "+e2.getMessage().toString());
         }catch (IOException e) {

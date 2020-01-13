@@ -5,6 +5,7 @@
  */
 package tmve.local.model.script;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import tmve.local.model.IpPath;
@@ -59,13 +60,13 @@ public class RncGouScriptDAO {
      * SI EL NODEB POSEE IPPM SE AGREGA AL SCRIPT (DEA) 
      * @return SCRIPT de DEA para IPPM para la RNC INTEGRATE O ROLLBACK
      */
-    public  String deaIppm(){
-        String script = "";
+    public  List<String> deaIppm(){
+        List<String> script = new ArrayList<>();;
         Iterator<Ippm> it = ippmList.iterator();
         while (it.hasNext()){
             Ippm temp = it.next();
-            script += "DEA IPPM: ANI="+temp.getAni()+
-                          ",PATHID="+temp.getPathId() +";\n";
+            script.add( "DEA IPPM: ANI="+temp.getAni()+
+                          ",PATHID="+temp.getPathId() +";\n");
             
            
         }
@@ -88,13 +89,13 @@ public class RncGouScriptDAO {
      * SE ELIMINA EL IPPATH ACTUAL DEL NODOB
      * @return SCRIPT RMV IPPATH para la RNC INTEGRATE O ROLLBACK
      */
-    public  String rmvIppath(){
-        String script = "";
+    public  List<String> rmvIppath(){
+        List<String> script = new ArrayList<>();;
         Iterator<IpPath> it = ippaths.iterator();
         while (it.hasNext()){
             IpPath temp = it.next();
-            script += "RMV IPPATH: ANI="+temp.getAni()+
-                          ",PATHID="+temp.getPATHID()+";\n";
+            script .add( "RMV IPPATH: ANI="+temp.getAni()+
+                          ",PATHID="+temp.getPATHID()+";\n");
             
            
         }
@@ -119,15 +120,15 @@ public class RncGouScriptDAO {
      * LOCIP1= IP VRF
      * @return MOD SCTPLNK Script para la RNC INTEGRATE O ROLLBACK 
      */
-    public String modSctplnk(){
-        String script = "";
+    public List<String> modSctplnk(){
+        List<String> script = new ArrayList<>();
         Iterator<Sctplnk> it = sctplnks.iterator();
         while (it.hasNext()){
             Sctplnk temp = it.next();
-            script += "MOD SCTPLNK:SRN="+temp.getSrn()+
+            script .add( "MOD SCTPLNK:SRN="+temp.getSrn()+
                 ",SN="+temp.getSn()+
                 ",SCTPLNKN="+temp.getSCTPLNKN()+
-                ",LOCIP1=\""+temp.getLOCIP1()+"\";\n";
+                ",LOCIP1=\""+temp.getLOCIP1()+"\";\n");
            
         }
         return script;
@@ -136,12 +137,12 @@ public class RncGouScriptDAO {
      * IPADDR= IP VRF
      * @return ADD IPPATH SCRIPT PARA LA RNC INTEGRATE O ROLLBACK
      */
-    public String addIpath(){
-        String script = "";
+    public List<String> addIpath(){
+        List<String> script = new ArrayList<>();
         Iterator<IpPath> it = ippaths.iterator();
         while (it.hasNext()){
            IpPath temp = it.next();
-           script +="ADD IPPATH:ANI="+temp.getAni()+
+           script.add("ADD IPPATH:ANI="+temp.getAni()+
                ",PATHID="+temp.getPATHID()+
                ",IPADDR=\""+temp.getIPADDR()+"\""+
                ",PEERIPADDR=\""+temp.getPEERIPADDR()+"\""+
@@ -155,7 +156,7 @@ public class RncGouScriptDAO {
                ",ITFT="+temp.getITFT()+
                ",TRANST="+temp.getTRANST()+
                ",TRMLOADTHINDEX="+temp.getTRMLOADTHINDEX()+
-               ",REMARK=\""+temp.getREMARK()+"\";\n";
+               ",REMARK=\""+temp.getREMARK()+"\";\n");
            
         }
         return script;
@@ -165,16 +166,16 @@ public class RncGouScriptDAO {
      * SI EL NODEB POSEE IPPM SE AGREGA AL SCRIPT (ACT) 
      * @return SCRIPT de ACT para IPPM para la RNC INTEGRATE O ROLLBACK
      */
-    public String actIppm(){
-        String script = "";
+    public List<String> actIppm(){
+        List<String> script = new ArrayList<>();
         Iterator<Ippm> it = ippmList.iterator();
         while (it.hasNext()){
            Ippm temp = it.next();
-           script +="ACT IPPM:ANI="+temp.getAni()+
+           script.add("ACT IPPM:ANI="+temp.getAni()+
                ",PATHID="+temp.getPathId()+
                ",ISQOSPATH="+temp.getIsqosPath()+
                ",PMPRD="+temp.getPmPrd()+
-               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+";\n";
+               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+";\n");
         }
         return script;
     }

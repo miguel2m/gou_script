@@ -6,6 +6,7 @@
 package tmve.local.controller.gouscript;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,14 +47,14 @@ public class RncGouScript {
      * @param _vrf
      * @return GOU SCRIPT (RNC INTEGRATE)
      */
-    public static String createRNCGouScript(Node node_name, 
+    public static List<String> createRNCGouScript(Node node_name, 
             String _rnc, 
             short _srn, 
             short _sn, 
             short _port, 
             String _vrf){
         MDC.clear();
-        String salidaGouScript ="";
+        List<String> salidaGouScript = new ArrayList<>();
         try{
             //System.out.println(" 1 PASO! ");
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
@@ -126,7 +127,7 @@ public class RncGouScript {
                  //System.exit(0);
             }
              //System.out.println("IPRT TO MOVEs 9 PASO! ");
-             salidaGouScript ="";
+             //salidaGouScript ="";
             //Para crear el script se debe crear una nueva istancia de RncGouScriptDAO 
             RncGouScriptDAO _RncGouScriptDAO = new RncGouScriptDAO();
             //Se verifica el nodo posee IPPM
@@ -137,14 +138,18 @@ public class RncGouScript {
             _RncGouScriptDAO.setSctplnk(sctplnks);
             _RncGouScriptDAO.setIppath(ipPathNodes);
              //Si el nodoB posee IPPM se procede a realizar el DEA IPPM y Posteriormente EL ACT IPPM
-            if(!CollectionUtils.isEmpty(_RncGouScriptDAO .getIppmList()))
+            if(!CollectionUtils.isEmpty(_RncGouScriptDAO .getIppmList())){
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A DEA IPPM ,RMV IPRT y RMV IPPATH
-            salidaGouScript += _RncGouScriptDAO.deaIppm()+
+                salidaGouScript.addAll(_RncGouScriptDAO.deaIppm());
+                salidaGouScript.add(_RncGouScriptDAO.rmvIprt());
+                salidaGouScript.addAll(_RncGouScriptDAO.rmvIppath());
+                            /*+= _RncGouScriptDAO.deaIppm()+
                                 _RncGouScriptDAO.rmvIprt()
-                                +_RncGouScriptDAO.rmvIppath();
-            else salidaGouScript += _RncGouScriptDAO.rmvIprt() //SE GENERAN LOS SCRIPT CORRESPONDIENTE A RMV IPRT y RMV IPPATH
-                                    +_RncGouScriptDAO.rmvIppath();
-
+                                +_RncGouScriptDAO.rmvIppath();*/
+            }else{ 
+                salidaGouScript .add( _RncGouScriptDAO.rmvIprt()); //SE GENERAN LOS SCRIPT CORRESPONDIENTE A RMV IPRT y RMV IPPATH
+                salidaGouScript .addAll( _RncGouScriptDAO.rmvIppath());
+            }
             ipRtNodes.get(0).setNexthop(ipRtNodesToMove.get(0).getNexthop());
             
             if(ipRtNodes.get(0).getRemark().equals("None"))
@@ -154,25 +159,25 @@ public class RncGouScript {
             ipRtNodes.get(0).setSn(ipRtNodesToMove.get(0).getSn());
             
             //SE GENERA LOS SCRIPT CORRESPONDIENTE A ADD IPRT (CON EL NEXTHOP DEL PUERTO DE LA RNC)
-            salidaGouScript += _RncGouScriptDAO.addIprt();
+            salidaGouScript.add( _RncGouScriptDAO.addIprt());
             Iterator<Sctplnk> it = sctplnks.iterator();
             while (it.hasNext()){
                 Sctplnk temp = it.next();
                 temp.setLOCIP1(_vrf);
             }
             //SE GENERA LOS SCRIPT PARA EL MOD SCTPLNK (SE COLOCA EN EL LOCIP1 la IP del VRF)
-            salidaGouScript += _RncGouScriptDAO.modSctplnk();
+            salidaGouScript.addAll( _RncGouScriptDAO.modSctplnk());
             Iterator<IpPath> it2 = ipPathNodes.iterator();
             while (it2.hasNext()){
                 IpPath temp = it2.next();
                 temp.setIPADDR(_vrf); 
             }
             //SE GENERA LOS SCRIPT PARA EL ADD IPPATH (SE COLOCA EN EL IPADRR la IP del VRF)
-            salidaGouScript +=  _RncGouScriptDAO.addIpath();
+            salidaGouScript.addAll( _RncGouScriptDAO.addIpath());
             //Si el nodoB posee IPPM se procede a realizar el DEA y Posteriormente EL ACT
             if(!CollectionUtils.isEmpty(_RncGouScriptDAO.getIppmList()))
-             //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
-            salidaGouScript += _RncGouScriptDAO.actIppm();
+                //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
+                salidaGouScript.addAll( _RncGouScriptDAO.actIppm());
             Main.mdcSetup("200", node_name);
             Main.logger.info("RNC {}  (GOUSCRIPT INTEGRATE)  CREADO CON EXITO  NODEB ({}) ",_rnc,nodeBIp.get(0).getNBTRANTP());
        /* }catch (NodebNotFoundException nodeb){
@@ -190,7 +195,7 @@ public class RncGouScript {
         }catch (GouScriptException ex){
             Main.mdcSetup(ex.getCodigo(), node_name);
             Main.logger.error("RNC {} (GOUSCRIPT INTEGRATE) {} GouScriptException", _rnc,ex.getMessage());
-            
+            salidaGouScript.add("CODIGO:"+ex.getCodigo()+"RNC"+_rnc+"(GOUSCRIPT INTEGRATE) GouScriptException"+ex.getMessage());
 
             //System.out.println(ex.getMessage());
         }catch (IOException e){
@@ -209,12 +214,12 @@ public class RncGouScript {
      * @param _port
      * @return GOU SCRIPT (ROLLBACK) 
      */
-    public static String createRNCRollbackGouScript(Node node_name, 
+    public static List<String> createRNCRollbackGouScript(Node node_name, 
             String _rnc, 
             short _srn, 
             short _sn, 
             short _port) {
-        String salidaGouScript ="";
+       List<String> salidaGouScript = new ArrayList<>();;
         try{
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
             List<AdjNode> adjNodes = ReadAdjnodeCsv.getAdjNode(_rnc,node_name.getNodeb_name());
@@ -292,30 +297,31 @@ public class RncGouScript {
             _RncGouRollbackScriptDAO .setSctplnk(sctplnks);
             _RncGouRollbackScriptDAO .setIppath(ipPathNodes);
             //Si el nodoB posee IPPM se procede a realizar el DEA y Posteriormente EL ACT
-            if(!CollectionUtils.isEmpty(_RncGouRollbackScriptDAO .getIppmList()))
+            if(!CollectionUtils.isEmpty(_RncGouRollbackScriptDAO .getIppmList())){
              //SE GENERAN LOS SCRIPT CORRESPONDIENTE A RMV IPRT y RMV IPPATH
-            salidaGouScript += _RncGouRollbackScriptDAO.deaIppm()+
-                                _RncGouRollbackScriptDAO.rmvIprt()
-                                +_RncGouRollbackScriptDAO.rmvIppath();
-            else salidaGouScript += _RncGouRollbackScriptDAO.rmvIprt()
-                                    +_RncGouRollbackScriptDAO.rmvIppath();
-            
+                salidaGouScript.addAll( _RncGouRollbackScriptDAO.deaIppm());
+                salidaGouScript.add( _RncGouRollbackScriptDAO.rmvIprt());
+                salidaGouScript.addAll(_RncGouRollbackScriptDAO.rmvIppath());
+            }else{ 
+                salidaGouScript.add(_RncGouRollbackScriptDAO.rmvIprt());
+                salidaGouScript.addAll(_RncGouRollbackScriptDAO.rmvIppath());
+            }
             if(ipRtNodes.get(0).getRemark().equals("None"))
                 ipRtNodes.get(0).setRemark("To "+adjNodes.get(0).getName()+" L3");
             _RncGouRollbackScriptDAO.setIprt(ipRtNodes.get(0));
             _RncGouRollbackScriptDAO.setSctplnk(sctplnks);
             _RncGouRollbackScriptDAO.setIppath(ipPathNodes);
             //SE GENERA LOS SCRIPT CORRESPONDIENTE A ADD IPRT (CON EL NEXTHOP DEL PUERTO DE LA RNC)
-            salidaGouScript += _RncGouRollbackScriptDAO.addIprt();
+            salidaGouScript.add(_RncGouRollbackScriptDAO.addIprt());
             //SE GENERA LOS SCRIPT PARA EL MOD SCTPLNK (SE COLOCA EL ESTADO ANTEIOR)
-            salidaGouScript += _RncGouRollbackScriptDAO.modSctplnk();
+            salidaGouScript.addAll(_RncGouRollbackScriptDAO.modSctplnk());
             //SE GENERA LOS SCRIPT PARA EL ADD IPPATH (SE COLOCA EL ESTADO ANTEIOR)
-            salidaGouScript +=  _RncGouRollbackScriptDAO.addIpath();
+            salidaGouScript.addAll(_RncGouRollbackScriptDAO.addIpath());
 
             //Si el nodoB posee IPPM se procede a realizar el DEA y Posteriormente EL ACT
             if(!CollectionUtils.isEmpty(_RncGouRollbackScriptDAO .getIppmList()))
-             //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
-            salidaGouScript += _RncGouRollbackScriptDAO.actIppm();
+                //SE GENERAN LOS SCRIPT CORRESPONDIENTE A ACT IPPM
+               salidaGouScript.addAll(_RncGouRollbackScriptDAO.actIppm());
             
             Main.mdcSetup("200", node_name);
             Main.logger.info("RNC {}  (GOUSCRIPT ROLLBACK)  CREADO CON EXITO  NODEB ({}) ",_rnc,nodeBIp.get(0).getNBTRANTP());
@@ -334,6 +340,7 @@ public class RncGouScript {
             Main.mdcSetup(ex.getCodigo(), node_name);
             System.out.println(ex.getMessage());
             Main.logger.error("RNC {} (GOUSCRIPT ROLLBACK) {} GouScriptException", _rnc,ex.getMessage());
+            salidaGouScript.add("CODIGO:"+ex.getCodigo()+"RNC"+_rnc+"(GOUSCRIPT ROLLBACK) GouScriptException"+ex.getMessage());
         }catch (IOException e){
             System.out.println(e);
             Main.logger.error("IOException {} ", e.getMessage());

@@ -6,6 +6,7 @@
 package tmve.local.controller.gouscript;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,8 +36,8 @@ public class NodeBGouScript {
      * @param _rnc
      * @return GOU SCRIPT (NODEB INTEGRATE) 
      */
-    public static String createNodeBGouScript(Node node_name, String _vrf,String _rnc){
-        String result ="";
+    public static List<String> createNodeBGouScript(Node node_name, String _vrf,String _rnc){
+        List<String> result = new ArrayList<>();
         try{
             boolean flag = false; //LA RED DE LA RNC NO SE ENCUENTRA EN EL IPRT DEL NODOB
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
@@ -104,7 +105,7 @@ public class NodeBGouScript {
 
 
                 //Se CREA LOS SCRIPT DE LIST
-                result += nodeGouScriptDAO.lstCommand();
+                result.addAll(nodeGouScriptDAO.lstCommand());
                 //Se coloca en el DSTIP LA VRFIP
                  nodeGouScriptDAO.getIprt().setDstip(_vrf);
 
@@ -114,7 +115,7 @@ public class NodeBGouScript {
                  nodeGouScriptDAO.getIprt().setRtIdx((short) (ReadIprtCsv.getIprtNodeBRtidx(
                          node_name.getNodeb_name())+1));
                  //SE CREA EL SCRIPT DE ADD IPRT
-                result += nodeGouScriptDAO.addIprt();
+                result.add(nodeGouScriptDAO.addIprt());
 
               //EN EL COMANDO MOD SCTPLINK  SE COLOCA LA LA VRF EN EL PARAMETRO PEERIP  
             Iterator<Sctplnk> it = nodeGouScriptDAO.getSctplnk().iterator();
@@ -123,7 +124,7 @@ public class NodeBGouScript {
                 temp.setPeerIp(_vrf);
             }
                 //SE CREA EL COMANDO MOD SCTPLNK
-                result += nodeGouScriptDAO.modSctplnk();
+                result.addAll(nodeGouScriptDAO.modSctplnk());
             //EN EL COMANDO MOD IPPATH  SE COLOCA LA LA VRF EN EL PARAMETRO PEERIP     
             Iterator<IpPath> it2 = nodeGouScriptDAO.getIppath().iterator();
             while (it2.hasNext()){
@@ -131,20 +132,20 @@ public class NodeBGouScript {
                 temp.setPeerIp(_vrf); 
             }
                 //SE CREA EL COAMNDO MOD IPRT
-                result += nodeGouScriptDAO.addIpath();
+                result.addAll(nodeGouScriptDAO.addIpath());
                 // SE COLOCA EL RTIDX ACTUAL DEL NODOB
                 nodeGouScriptDAO.getIprt().setRtIdx(tempRtIdx);
                 //SE CREA EL COMANDO RMV IPRT 
-                result += nodeGouScriptDAO.rmvIprt();
+                result.add(nodeGouScriptDAO.rmvIprt());
                 //Se CREA LOS SCRIPT DE LIST
-                result += nodeGouScriptDAO.lstCommand();
+                result.addAll(nodeGouScriptDAO.lstCommand());
                 /*SE CREA EL COMANDO PING*/
                 //PARA CREA EL COAMNDO PING SE NECESITA LA IPPATH Y EL IPRT
                 nodeGouScriptDAO.setIppath( ipPathNodesRNC); //IPPATH de la RNC con el NodeB
                 nodeGouScriptDAO.getIppath().get(0).setSn(nodeGouScriptDAO.getIprt().getSn());//SE coloca la SN del NODO B
                 nodeGouScriptDAO.getIprt().setDstip(_vrf); //IPRT de la RNC con el DSTIP del NodeB
                 //SE CREA EL COAMNDO PING
-                result+=  nodeGouScriptDAO.ping();
+                result.add(nodeGouScriptDAO.ping());
                 
                 if(flag)
                      throw new GouScriptException("401",
@@ -167,6 +168,7 @@ public class NodeBGouScript {
             //System.out.println(ex.getMessage());
             Main.mdcSetup(ex.getCodigo(), node_name);
             Main.logger.error("NodeB (GOUSCRIPT INTEGRATE) {} ", ex.getMessage());
+            result.add("CODIGO "+ex.getCodigo()+"NodeB (GOUSCRIPT INTEGRATE) "+ex.getMessage());
         }catch (IOException e){
             //System.out.println(e);
             Main.logger.error("IOException {} ", e.getMessage());
@@ -180,8 +182,8 @@ public class NodeBGouScript {
      * @param node_name
      * @return GOU SCRIPT (NODEB ROLLBACK) 
      */
-    public static String createNodeBGouScriptRollback(String _rnc,Node node_name){
-        String result ="";
+    public static List <String> createNodeBGouScriptRollback(String _rnc,Node node_name){
+        List <String> result = new ArrayList<>();
         try{
             boolean flag = false;
             //Se consulta en la tabla ADJNODE el ANI del NodeB filtrado por Nombre del nodoB (U_MORON)
@@ -251,22 +253,22 @@ public class NodeBGouScript {
 
 
                 //Se
-                result += nodeGouScriptDAO.lstCommand();
+                result.addAll( nodeGouScriptDAO.lstCommand());
 
 
-                result += nodeGouScriptDAO.addIprt();
+                result.add(nodeGouScriptDAO.addIprt());
 
-                result += nodeGouScriptDAO.modSctplnk();
+                result.addAll(nodeGouScriptDAO.modSctplnk());
 
-                result += nodeGouScriptDAO.addIpath();
+                result.addAll(nodeGouScriptDAO.addIpath());
                 nodeGouScriptDAO.getIprt().setRtIdx((short) (ReadIprtCsv.getIprtNodeBRtidx(
                          node_name.getNodeb_name())+1));
-                result += nodeGouScriptDAO.rmvIprt();
-                result += nodeGouScriptDAO.lstCommand();
+                result.add(nodeGouScriptDAO.rmvIprt());
+                result.addAll(nodeGouScriptDAO.lstCommand());
                 nodeGouScriptDAO.setIppath( ipPathNodesRNC);
                 nodeGouScriptDAO.getIppath().get(0).setSn(nodeGouScriptDAO.getIprt().getSn());
 
-                result+=  nodeGouScriptDAO.ping();
+                result.add(nodeGouScriptDAO.ping());
 
             if(flag)
                 throw new GouScriptException("401",
@@ -286,6 +288,7 @@ public class NodeBGouScript {
             Main.mdcSetup(ex.getCodigo(), node_name);
            // System.out.println(ex.getMessage());
             Main.logger.error("NodeB (GOUSCRIPT ROLLBACK) {} ", ex.getMessage());
+            result.add("CODIGO "+ex.getCodigo()+"NodeB (GOUSCRIPT ROLLBACK) "+ex.getMessage());
         }catch (IOException e){
             //System.out.println(e);
             Main.logger.error("IOException {} ", e.getMessage());
