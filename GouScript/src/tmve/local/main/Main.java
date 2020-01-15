@@ -165,7 +165,11 @@ public class Main {
         String inputFile = null; //Input file
         Boolean showHelpMessage = false;
         Boolean showVersion = false;
-        
+        /*
+        System.setProperty("LOG_DIR", "./log_error" );
+        System.setProperty("LOG_FILE", "ERROR_ENTRADA_PARAMETROS" );
+        logger = LoggerFactory.getLogger(Main.class);
+        */
         short _srn=-1 /*SUB RACK NUMBER*/,
              _sn=-1 /*Slock Number*/,
               _p=-1 /*Case port is a number*/;
@@ -311,25 +315,29 @@ public class Main {
             
             
         }catch (NumberFormatException ex) {
-            System.out.println("Please enter valid SN or SRN  "+ex.getMessage().toString());
-         //   Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getMessage().toString());
+            //System.out.println("Please enter valid SN or SRN  "+ex.getMessage().toString());
+        
+            System.err.println("Please enter valid SN or SRN  "+ex.getMessage());
             System.exit(1);
         }catch(IllegalArgumentException e){
-           System.out.println("AQUI "+e.getMessage().toString());
+          //System.out.println("IllegalArgumentException ERROR GENERAL "+e.getMessage().toString());
+          System.err.println("IllegalArgumentException ERROR GENERAL "+e.getMessage());
+          
            System.exit(1);
         }catch (ParseException ex) {
-            System.out.println(" "+ex.getMessage().toString());
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getMessage().toString());
+            //System.out.println("ParseException ERROR GENERAL "+ex.getMessage().toString());
+           
+            System.err.println("ParseException ERROR GENERAL "+ex.getMessage());
             System.exit(1);
         }
+        
+
             
-            System.setProperty("LOG_DIR", outputDirectory );
-            System.setProperty("LOG_FILE", _rnc );
-            logger = LoggerFactory.getLogger(Main.class);
             
             if(showVersion == true ){
-                System.out.println("1.0.0");
-                System.out.println("Copyright (c) Telefonica Venezuela"+executionTime.getDate());
+                System.out.println("1.0.0 \n Copyright (c) "+executionTime.getDate()+" Telefonica VENEZUELA ");
+                //System.out.println("1.0.0");
+                //System.out.println("Copyright (c)"+executionTime.getDate()+" Telefonica VENEZUELA");
                 System.exit(0);
             }
             
@@ -342,39 +350,45 @@ public class Main {
                      String footer = "\n";
                      footer += "Examples: \n";
                      footer += "java -jar gouscript-1.0.jar -db ./DB_FOLDER -i NODES-LIST.csv -srn 1 -sn 2 -p 1 -vrf 10.x.x.254 -o ./OUT_FOLDER\n";
-                     footer += "\nCopyright (c)"+executionTime.getDate()+" Telefonica Veneuzela";
-                     formatter.printHelp( "java -jar gouscript-1.0.jar -h", header, options, footer );
+                     footer += "\nCopyright (c)"+executionTime.getDate()+" Telefonica VENEZUELA";
+                     formatter.printHelp( "java -jar gouscript.jar -h", header, options, footer );
                      System.exit(0);
             }
            if (!Validator.isFile(inputFile)) {
-                System.out.println("ERROR: Cannot read input FILE " + inputFile);
-                System.exit(0);
+               System.err.println("ERROR: Cannot read input FILE " + inputFile);
+                //System.out.println("ERROR: Cannot read input FILE " + inputFile);
+                System.exit(1);
            } else {
             if (!Validator.isDirectory(_db_dir)) {
-                logger.error(" Cannot read DB folder " + _db_dir);
-                System.out.println("ERROR: Cannot read DB folder " + _db_dir);
-                System.exit(0);
+                System.err.println(" Cannot read DB folder " + _db_dir);
+                //System.out.println("ERROR: Cannot read DB folder " + _db_dir);
+                System.exit(1);
             }
            }
             //Confirm that the output directory is a directory and has write 
             //privileges
-            if(outputDirectory != null ){
+            if(outputDirectory != null){
                 File fOutputDir = new File(outputDirectory);
                 if (!fOutputDir.isDirectory() ) {
-                    System.err.println("ERROR: The specified output directory is not a directory!.");
+                    System.err.println("ERROR: The specified output directory is not a directory!");
+                    //System.err.println("ERROR: The specified output directory is not a directory!.");
                     System.exit(1);
                 }
-
+                
                 if (!fOutputDir.canWrite()) {
                     System.err.println("ERROR: Cannot write to output directory (deny folder permission)!");
+                    //System.err.println("ERROR: Cannot write to output directory (deny folder permission)!");
                     System.exit(1);
                 }
             }
-            //System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, outputDirectory);
-
             
+       
+        try{  
+            System.setProperty("LOG_DIR", outputDirectory );
+            System.setProperty("LOG_FILE", _rnc );
+            logger = LoggerFactory.getLogger(Main.class);
             //logger.info("Example log from {}", Main.class.getSimpleName());
-        try  {
+       
              List<Node> nodes = NodeList.getNodeBList(inputFile);
              nodes.forEach(System.out::println);
              System.out.println("---- TOTAL DE NODOS "+nodes.size()+"----");
@@ -412,7 +426,7 @@ public class Main {
                             "RNC ROLLBACK");
                      }
                         
-                        System.out.println(" NODEB ROLLBACK DONE");
+                    System.out.println(" NODEB ROLLBACK DONE");
                     System.out.println("----"+temp.getNodeb_name()+" NODEB Integrate----");
                     //System.out.println( NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc));
                         //NodeBGouScript.createNodeBGouScript(temp, _vrfIp,_rnc) .forEach(System.out::print);
@@ -461,8 +475,9 @@ public class Main {
         }catch (Exception e2){
             Node errorGeneral = new Node ();
                  errorGeneral.setNodeb_name("Error General");
-            mdcSetup("502", errorGeneral);
+            mdcSetup("503", errorGeneral);
             logger.error("Exception ERROR GENERAL: {}", e2);
+            System.exit(1);
                   
         }
             //System.out.println("Newtork: "+Validator.getNetwork("10.18.50.82", "255.255.255.252"));
