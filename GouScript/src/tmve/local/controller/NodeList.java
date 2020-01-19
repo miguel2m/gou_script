@@ -17,11 +17,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import static java.util.Comparator.comparing;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
+import java.util.stream.Stream;
 import tmve.local.model.Node;
 
 /**
@@ -30,6 +34,33 @@ import tmve.local.model.Node;
  */
 public class NodeList {
     
+    public static List<Node> getNodeBListArray(String[] nodeList)throws IOException,CsvConstraintViolationException{
+        
+        
+        List<String> listString = Arrays.stream(nodeList).collect(Collectors.toList());
+        List<Node> nodes = new ArrayList<>() ;
+        
+        for(String item :listString){
+            Node node = new Node();
+            node.setNodeb_name(item);
+            nodes.add(node);
+        }
+           
+           
+        
+        return nodes;
+        
+    }
+    
+
+    
+    /**
+     * GET NODE LIST FROM A FILE CSV
+     * @param fileName
+     * @return
+     * @throws IOException
+     * @throws CsvConstraintViolationException 
+     */
     public static List<Node> getNodeBList(String fileName)throws IOException,CsvConstraintViolationException{
         
         Path myPath = Paths.get(fileName);
@@ -70,4 +101,6 @@ public class NodeList {
         return nodes;
         
     }
+    
+    
 }

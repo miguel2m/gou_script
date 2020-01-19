@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -163,6 +165,7 @@ public class Main {
         ExecutionTime executionTime = new ExecutionTime(); //Execution Time
         String outputDirectory = null; // Output directory  
         String inputFile = null; //Input file
+        String[] inputNodes = null; // Input Nodes
         Boolean showHelpMessage = false;
         Boolean showVersion = false;
         /*
@@ -188,8 +191,8 @@ public class Main {
                     .argName( "INPUT_DB_DIRECTORY" ).build());
             options.addOption( Option.builder("i")
                     .longOpt( "input-file" )
-                    .desc( "(NODEB list) please enter input CSV file ")
-                    .hasArg()
+                    .desc( "(NODEB list) write RNC NodeB List ")
+                    .hasArgs()
                     .argName( "INPUT_FILE" ).build());
             options.addOption(Option.builder("rnc")
                     .longOpt( "rnc" )
@@ -242,9 +245,10 @@ public class Main {
                 
             }
             if(cmd.hasOption('i')){
-                inputFile = cmd.getOptionValue("i");
-                //script.dataSource=inputFile;
-                System.out.println("Input file "+inputFile);
+                inputNodes = cmd.getOptionValues("i");
+                //List temp2 = new ArrayList<>(Arrays.asList(inputNodes));//script.dataSource=inputFile;
+                //temp2.forEach(System.out::println);
+                //System.out.println("Input file " );
             }
             if(cmd.hasOption("rnc")){
                 
@@ -343,7 +347,7 @@ public class Main {
             
             //show help
             if( showHelpMessage == true || 
-                inputFile == null || _rnc == null || _db_dir ==null ||
+                 inputNodes == null|| _rnc == null || _db_dir ==null ||
                 ( outputDirectory == null ) ){
                      HelpFormatter formatter = new HelpFormatter();
                      String header = "Execute GOU Scripts\n\n";
@@ -354,17 +358,17 @@ public class Main {
                      formatter.printHelp( "java -jar gouscript.jar -h", header, options, footer );
                      System.exit(0);
             }
-           if (!Validator.isFile(inputFile)) {
+          /* if (!Validator.isFile(inputFile)) {
                System.err.println("ERROR: Cannot read input FILE " + inputFile);
                 //System.out.println("ERROR: Cannot read input FILE " + inputFile);
                 System.exit(1);
-           } else {
+           } else {*/
             if (!Validator.isDirectory(_db_dir)) {
                 System.err.println(" Cannot read DB folder " + _db_dir);
                 //System.out.println("ERROR: Cannot read DB folder " + _db_dir);
                 System.exit(1);
             }
-           }
+          // }
             //Confirm that the output directory is a directory and has write 
             //privileges
             if(outputDirectory != null){
@@ -389,10 +393,10 @@ public class Main {
             logger = LoggerFactory.getLogger(Main.class);
             //logger.info("Example log from {}", Main.class.getSimpleName());
        
-             List<Node> nodes = NodeList.getNodeBList(inputFile);
-             nodes.forEach(System.out::println);
-             System.out.println("---- TOTAL DE NODOS "+nodes.size()+"----");
-             Iterator<Node> it = nodes.iterator();
+            List<Node> nodes = NodeList.getNodeBListArray(inputNodes);
+            nodes.forEach(System.out::println);
+            System.out.println("---- TOTAL DE NODOS "+nodes.size()+"----");
+            Iterator<Node> it = nodes.iterator();
              
             while (it.hasNext()){
                 
