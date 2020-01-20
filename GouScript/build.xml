@@ -70,8 +70,9 @@
     nbproject/build-impl.xml file. 
 
     -->
+
     <target name="-post-jar">
-        <property name="store.jar.name" value="AllInOneJar"/>
+        <property name="store.jar.name" value="gouScript"/>
         <property name="store.dir" value="dist"/>
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
@@ -88,4 +89,5 @@
         </zip>
         <delete file="${store.dir}/temp_final.jar"/>
     </target>
+
 </project>
