@@ -94,7 +94,7 @@ public class NodeBGouScript {
             }
 
             NodeGouScriptDAO nodeGouScriptDAO = new NodeGouScriptDAO();
-
+            nodeGouScriptDAO.setNodeName(adjNodes.get(0).getName());
             nodeGouScriptDAO.setIprt(ipRtNodes.get(0));
             nodeGouScriptDAO.setSctplnk(sctplnks);
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por el nombre del nodo (PARA OBTENER EL SN DEL NODOB)
@@ -140,7 +140,8 @@ public class NodeBGouScript {
                 result.addAll(nodeGouScriptDAO.addIpath());
                 // SE COLOCA EL RTIDX ACTUAL DEL NODOB
                 nodeGouScriptDAO.getIprt().setRtIdx(tempRtIdx);
-                //SE CREA EL COMANDO RMV IPRT 
+                //SE CREA EL COMANDO RMV IPRT
+                if(!flag)
                 result.add(nodeGouScriptDAO.rmvIprt());
                 //Se CREA LOS SCRIPT DE LIST
                 result.addAll(nodeGouScriptDAO.lstCommand());
@@ -174,7 +175,7 @@ public class NodeBGouScript {
             Main.mdcSetup(ex.getCodigo(), node_name);
             Main.logger.error("NodeB (GOUSCRIPT INTEGRATE) {} ", ex.getMessage());
             if(flag)
-                result.add("CODIGO "+ex.getCodigo()+" NodeB (GOUSCRIPT INTEGRATE) "+ex.getMessage());
+                result.add("//CODIGO "+ex.getCodigo()+" NodeB (GOUSCRIPT INTEGRATE) "+ex.getMessage());
         }catch (IOException e){
             Main.mdcSetup("500", node_name);
             Main.logger.error("NODE B INTEGRATE IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE FALTA: {}", e.getMessage());
@@ -249,7 +250,7 @@ public class NodeBGouScript {
             } 
            //ipRtNodes.forEach(System.out::println);
             NodeGouScriptDAO nodeGouScriptDAO = new NodeGouScriptDAO();
-
+            nodeGouScriptDAO.setNodeName(adjNodes.get(0).getName());
             nodeGouScriptDAO.setIprt(ipRtNodes.get(0));
             nodeGouScriptDAO.setSctplnk(sctplnks);
             // Se consulta en la tabla de IPPATH el ippath del NodeB filtrado por el nombre del nodo (PARA OBTENER EL SN DEL NODOB)
@@ -275,6 +276,7 @@ public class NodeBGouScript {
                 result.addAll(nodeGouScriptDAO.addIpath());
                 nodeGouScriptDAO.getIprt().setRtIdx((short) (ReadIprtCsv.getIprtNodeBRtidx(
                          node_name.getNodeb_name())+1));
+                if(!flag)
                 result.add(nodeGouScriptDAO.rmvIprt());
                 result.addAll(nodeGouScriptDAO.lstCommand());
                 nodeGouScriptDAO.setIppath( ipPathNodesRNC);
@@ -301,7 +303,7 @@ public class NodeBGouScript {
            // System.out.println(ex.getMessage());
             Main.logger.error("NodeB (GOUSCRIPT ROLLBACK) {} ", ex.getMessage());
             if (flag)
-                result.add("CODIGO "+ex.getCodigo()+" NodeB (GOUSCRIPT ROLLBACK) "+ex.getMessage());
+                result.add("//CODIGO "+ex.getCodigo()+" NodeB (GOUSCRIPT ROLLBACK) "+ex.getMessage());
         }catch (IOException e){
             Main.mdcSetup("500", node_name);
             Main.logger.error("NODE B ROLLBACK IOException LA BASE DE DATOS NO ESTA CARGADA COMPLETAMENTE FALTA: {}", e.getMessage());

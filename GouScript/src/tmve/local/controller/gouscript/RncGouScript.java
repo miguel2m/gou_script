@@ -134,6 +134,7 @@ public class RncGouScript {
              //salidaGouScript ="";
             //Para crear el script se debe crear una nueva istancia de RncGouScriptDAO 
             RncGouScriptDAO _RncGouScriptDAO = new RncGouScriptDAO();
+            _RncGouScriptDAO.setRncName(_rnc);
             //Se verifica el nodo posee IPPM
             if(!CollectionUtils.isEmpty(ippmNodes)) 
                 _RncGouScriptDAO .setIppmList(ippmNodes);
@@ -293,6 +294,9 @@ public class RncGouScript {
         
             //Para crear el script se debe crear una nueva istancia de RncGouScriptDAO 
             RncGouScriptDAO _RncGouRollbackScriptDAO = new RncGouScriptDAO();
+            
+            _RncGouRollbackScriptDAO.setRncName(_rnc);
+            
             //Se verifica el nodo posee IPPM
 
             if(!CollectionUtils.isEmpty(ippmNodes )) _RncGouRollbackScriptDAO .setIppmList(ippmNodes);

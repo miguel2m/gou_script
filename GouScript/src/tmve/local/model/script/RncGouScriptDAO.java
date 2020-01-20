@@ -24,7 +24,17 @@ public class RncGouScriptDAO {
     private List <IpPath> ippaths;
     private List <Sctplnk> sctplnks;
     private List <Ippm> ippmList;
+    private String rncName;
 
+    public String getRncName() {
+        return rncName;
+    }
+
+    public void setRncName(String rncName) {
+        this.rncName = rncName;
+    }
+    
+    
     public List<Ippm> getIppmList() {
         return ippmList;
     }
@@ -66,7 +76,7 @@ public class RncGouScriptDAO {
         while (it.hasNext()){
             Ippm temp = it.next();
             script.add( "DEA IPPM: ANI="+temp.getAni()+
-                          ",PATHID="+temp.getPathId() +";");
+                          ",PATHID="+temp.getPathId() +"; {"+rncName+"}");
             
            
         }
@@ -83,7 +93,7 @@ public class RncGouScriptDAO {
                 ",DSTIP=\""+iprt.getDstip()+"\""+
                 ",DSTMASK=\""+iprt.getDstmask()+"\""+
                 ",NEXTHOP=\""+iprt.getNexthop()+"\""+
-                ",FORCEEXECUTE=YES;";   
+                ",FORCEEXECUTE=YES; {"+rncName+"}";   
     }
     /**
      * SE ELIMINA EL IPPATH ACTUAL DEL NODOB
@@ -95,7 +105,7 @@ public class RncGouScriptDAO {
         while (it.hasNext()){
             IpPath temp = it.next();
             script .add( "RMV IPPATH: ANI="+temp.getAni()+
-                          ",PATHID="+temp.getPATHID()+";");
+                          ",PATHID="+temp.getPATHID()+"; {"+rncName+"}");
             
            
         }
@@ -114,7 +124,7 @@ public class RncGouScriptDAO {
                 ",SRN="+iprt.getSrn()+
                 ",SN="+iprt.getSn()+
                 ",REMARK=\""+iprt.getRemark()+"\""+
-                ",PRIORITY=HIGH;";
+                ",PRIORITY=HIGH; {"+rncName+"}";
     }
     /**
      * LOCIP1= IP VRF
@@ -128,7 +138,7 @@ public class RncGouScriptDAO {
             script .add( "MOD SCTPLNK:SRN="+temp.getSrn()+
                 ",SN="+temp.getSn()+
                 ",SCTPLNKN="+temp.getSCTPLNKN()+
-                ",LOCIP1=\""+temp.getLOCIP1()+"\";");
+                ",LOCIP1=\""+temp.getLOCIP1()+"\"; {"+rncName+"}");
            
         }
         return script;
@@ -156,7 +166,7 @@ public class RncGouScriptDAO {
                ",ITFT="+temp.getITFT()+
                ",TRANST="+temp.getTRANST()+
                ",TRMLOADTHINDEX="+temp.getTRMLOADTHINDEX()+
-               ",REMARK=\""+temp.getREMARK()+"\";");
+               ",REMARK=\""+temp.getREMARK()+"\"; {"+rncName+"}");
            
         }
         return script;
@@ -175,7 +185,7 @@ public class RncGouScriptDAO {
                ",PATHID="+temp.getPathId()+
                ",ISQOSPATH="+temp.getIsqosPath()+
                ",PMPRD="+temp.getPmPrd()+
-               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+";");
+               ",LOSTPKTDETECTSW="+temp.getLostPktDetectSw()+"; {"+rncName+"}");
         }
         return script;
     }

@@ -42,11 +42,13 @@ public class ExportToExcel {
      * @param gouScript (El script)
      * @param gouScriptType  (Si es Integrate o Rollback)
      */
-    public static void exportGouScript (XSSFWorkbook wb,
+    public static int exportGouScript (XSSFWorkbook wb,
+            XSSFSheet sheet,
             Node node_name, 
             String output_Directory,
             List<String> gouScript,
-            String gouScriptType){
+            //String gouScriptType,
+            int rowNum){
       
         DateTimeFormatter formatter =
         DateTimeFormatter.ofLocalizedDateTime( FormatStyle.MEDIUM )
@@ -54,11 +56,11 @@ public class ExportToExcel {
                      .withZone( ZoneId.systemDefault() );
         
         String output = formatter.format( Instant.now() );
-
-        XSSFSheet sheet = wb.createSheet(gouScriptType);
+        
+        //XSSFSheet sheet = wb.createSheet(gouScriptType);
         Iterator<String> it =  gouScript.iterator();
-        Integer rowNum = 0;
-        Integer colNum = 0;
+        /*Integer rowNum = 0;
+        Integer colNum = 0;*/
     
         CellStyle styleHeader = wb.createCellStyle();
 
@@ -74,8 +76,8 @@ public class ExportToExcel {
             styleHeader.setVerticalAlignment( VerticalAlignment.CENTER);
 
             XSSFRow rowHeader2 = sheet.createRow(rowNum);
-            XSSFCell cellHeader2 = rowHeader2 .createCell(1);
-            cellHeader2.setCellValue("COMMAND "+output);
+            XSSFCell cellHeader2 = rowHeader2 .createCell(0);
+            cellHeader2.setCellValue("//INICIO NODEB "+node_name.getNodeb_name()+" COMMAND DATE: "+output);
             cellHeader2.setCellStyle(styleHeader);
             
         
@@ -84,13 +86,13 @@ public class ExportToExcel {
             String temp = it.next();
             
             rowHeader2  = sheet.createRow(rowNum);
-            XSSFCell cell = rowHeader2 .createCell(1);
+            XSSFCell cell = rowHeader2 .createCell(0);
             
            
             sheet.addMergedRegion(new CellRangeAddress(
                 rowNum, //first row (0-based)
                 rowNum, //last row  (0-based)
-                1, //first column (0-based)
+                0, //first column (0-based)
                 26 //last column  (0-based)
             ));
            
@@ -99,6 +101,23 @@ public class ExportToExcel {
            rowNum++;
         }
         
-       
+        
+        XSSFRow rowHeader3 = sheet.createRow(rowNum++);
+            XSSFCell cellHeader3 = rowHeader3 .createCell(0);
+            cellHeader3.setCellValue("//FIN NODEB "+node_name.getNodeb_name()+" COMMAND DATE: "+output);
+            cellHeader3.setCellStyle(styleHeader);
+        
+        XSSFRow rowHeader4 = sheet.createRow(rowNum++);
+            XSSFCell cellHeader4 = rowHeader4 .createCell(0);
+            cellHeader4.setCellValue("");
+           
+        
+        XSSFRow rowHeader5 = sheet.createRow(rowNum++);
+            XSSFCell cellHeader5 = rowHeader5 .createCell(0);
+            cellHeader5.setCellValue("");
+
+            
+            
+       return rowNum;
     }
 }
