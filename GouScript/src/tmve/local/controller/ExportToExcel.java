@@ -107,14 +107,14 @@ public class ExportToExcel {
             cellHeader3.setCellValue("//FIN NODEB "+node_name.getNodeb_name()+" COMMAND DATE: "+output);
             cellHeader3.setCellStyle(styleHeader);
         
-        XSSFRow rowHeader4 = sheet.createRow(rowNum++);
+       /* XSSFRow rowHeader4 = sheet.createRow(rowNum++);
             XSSFCell cellHeader4 = rowHeader4 .createCell(0);
             cellHeader4.setCellValue("");
            
         
         XSSFRow rowHeader5 = sheet.createRow(rowNum++);
             XSSFCell cellHeader5 = rowHeader5 .createCell(0);
-            cellHeader5.setCellValue("");
+            cellHeader5.setCellValue("");*/
 
             
             

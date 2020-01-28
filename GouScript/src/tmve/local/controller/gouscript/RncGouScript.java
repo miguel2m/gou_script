@@ -126,8 +126,11 @@ public class RncGouScript {
             //Se consulta en la tabla IPRT el nexthop de SN SRN y Puerto de la RNC
             List<Iprt> ipRtNodesToMove = ReadIprtCsv.getIprtPortNexthop(_rnc, _sn, _srn, _port);
             if(CollectionUtils.isEmpty(ipRtNodesToMove)){
-                System.err.println("IPRT ROLLBACK: EL PUERTO "+_port+
+                
+                System.err.println("IPRT RNC INTEGRATE: EL PUERTO "+_port+
                                    " del la RNC "+_rnc+" no posee NEXTHOOP\n");
+                throw new GouScriptException("405","IPRT RNC INTEGRATE: EL PUERTO "+_port+
+                                   " del la RNC "+_rnc+" no posee NEXTHOOP");
                  //System.exit(0);
             }
              //System.out.println("IPRT TO MOVEs 9 PASO! ");
@@ -289,6 +292,8 @@ public class RncGouScript {
             if(CollectionUtils.isEmpty(ipRtNodesToRollback)){
                 System.err.println("IPRT ROLLBACK: EL PUERTO "+_port+
                                    " del la RNC "+_rnc+" no posee NEXTHOOP\n");
+                throw new GouScriptException("405","IPRT RNC ROLLBACK: EL PUERTO "+_port+
+                                   " del la RNC "+_rnc+" no posee NEXTHOOP");
                 // System.exit(0);
             }
         
