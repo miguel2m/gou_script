@@ -110,8 +110,8 @@ public class RncGouScript {
             ///Se consulta la tabla SCTCPLNK para consultar el   sctplnk del NodeB filtador por NodeBID            
             List<Sctplnk> sctplnks = ReadSctplnkCsv.getNodeBSctplnk(_rnc,nodeB.get(0).getNodebid());
             if(CollectionUtils.isEmpty(sctplnks  )){
-                /*System.err.println("SCTPLNK: EL NODEB ID "+nodeB.get(0).getNodebid()+
-                                   " NO SE ENCUENTRA en la RNC "+_rnc+"\n");*/
+                System.err.println("SCTPLNK: EL NODEB ID "+nodeB.get(0).getNodebid()+
+                                   " NO SE ENCUENTRA en la RNC "+_rnc+"\n");
                  //System.exit(0);
             }
             // System.out.println("SCTPLNK 7 PASO! ");
