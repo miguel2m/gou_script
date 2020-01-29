@@ -475,13 +475,13 @@ public class Main {
                                                                                 outputDirectory, 
                                                                                 createNODEBIntegrate, 
                                                                                 rowNODEBIntegrate);
-                            System.out.println(" NODEB ROLLBACK DONE");
+                            System.out.println(" NODEB INTEGRATE DONE");
                             rowNODEBRollback=ExportToExcel.exportGouScript(wb,sheetNODERollback,
                                                                                 temp, 
                                                                                 outputDirectory, 
                                                                                 createNODEBRollback, 
                                                                                 rowNODEBRollback);
-                            System.out.println(" RNC ROLLBACK DONE");
+                            System.out.println(" NODEB ROLLBACK DONE");
                         }
                         
                     
