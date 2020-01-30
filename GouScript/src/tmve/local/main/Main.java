@@ -395,8 +395,8 @@ public class Main {
             System.out.println("---- TOTAL DE NODOS "+nodes.size()+"----");
             Iterator<Node> it = nodes.iterator();
             
-            String outFile= "./"+outputDirectory+
-                                "/"+_rnc+
+            String outFile= outputDirectory+
+                                File.separator+_rnc+
                                 "_GOUSCRIPT.xlsx";
                 XSSFWorkbook wb = new XSSFWorkbook();
                 XSSFSheet sheetRNCIntegrate = wb.createSheet("RNC INTEGRATE");
