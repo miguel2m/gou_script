@@ -65,7 +65,7 @@ public class NodeGouScriptDAO {
                script.add("LST IPRT:; {"+nodeName+"}");
                script.add("LST IPPATH:; {"+nodeName+"}");
                script.add("LST SCTPLNK:; {"+nodeName+"}");
-               script.add("LST OMCH:; {"+nodeName+"}");
+               //script.add("LST OMCH:; {"+nodeName+"}");
          return script ;
     }
     /**
@@ -119,7 +119,7 @@ public class NodeGouScriptDAO {
      * @return RMV IPRT DEL LADO DEL NODO
      */
     public String rmvIprt(){
-        return "RMV IPRT:RTIDX="+iprt.getRtIdx()+";//*** | PLEASE CHECK | ***{"+nodeName+"}";
+        return "RMV IPRT:RTIDX="+iprt.getRtIdx()+";{"+nodeName+"}";
     }
     
     public String ping(){
